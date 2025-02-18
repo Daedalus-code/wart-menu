@@ -22,8 +22,26 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   meson build --buildtype=release
   # change directory
   cd build
-  # ninja
-  ninja
+  # ninja -j"minus one thread"
+  ninja -j"$(echo "$(cat /proc/cpuinfo | grep -c "processor")-1" | bc 2>/dev/null)"
+  # if missing
+  if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
+    # service data
+    echo "[Unit]
+Description=Warthog Node
+
+[Service]
+WorkingDirectory=/home/wart/Warthog/build/src/node
+ExecStart=/home/wart/Warthog/build/src/node/wart-node --chain-db=/home/$USER/.warthog/chain.db3 --peers-db=/home/$USER/.warthog/peers.db3
+Restart=always
+
+[Install]
+WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
+  fi
+  # install service
+  sudo mv /tmp/wrnsrv.tmp /etc/systemd/system/wart-node.service
+  # reload
+  sudo systemctl-reload
   # change directory
   cd src/node/
   # start node

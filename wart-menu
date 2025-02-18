@@ -3,15 +3,11 @@
 # do not edit below ############################################################
 
 # color scheme
-B0='\e[34m'       # Blue
-BL='\e[38;5;27m'  # Deep Blue (Shadow)
-GR='\e[90m'       # Grey
-N0='\033[0m'      # No color (reset)
-P0='\e[38;5;93m'  # Deep Purple (Base)
-P1='\e[38;5;99m'  # Bright Purple (Glow)
-P2='\e[38;5;129m' # Magenta-Purple (Secondary Glow)
-Y0='\e[33m'       # Yellow
-Y1='\e[38;5;226m' # Bright Yellow (Sharp Peak)
+R0='\e[31m'      # Red
+BL='\e[38;5;27m' # Deep Blue (Shadow)
+GR='\e[90m'      # Grey
+N0='\033[0m'     # No color (reset)
+P1='\e[38;5;99m' # Bright Purple (Glow)
 
 MENU_VERSION="0.0.7" # Updated menu version
 
@@ -21,9 +17,9 @@ RESULT="${N0}[$(date)]${N0} ${BL}[INFO]${N0} ${P1}Wart-Menu v$MENU_VERSION${N0}
 ${GR}                                      %%%
                           .%%%%%%%%%%%%  %%
                     %%%%%%%%%%%%%%%%%%%%%%%%
-                     %%%%%%%%%%%%%%%%%%%%%%%#%%
+                     %%%%%%%%%%%%%%%%%%%%%%%#%%${R0}
                 =%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${N0}
           .%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%( )%%
         .%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
