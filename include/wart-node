@@ -48,13 +48,15 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   ./wart-node
 
 else
+  clear
+  # pidof wart-node
   PIDOF_WART_NODE="$(pidof wart-node 2>/dev/null)"
   if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    PIDOF_WART_NODE="Offline"
+    echo "[!!] PID of wart-node: Offline"
+  else
+    echo "[OK] PID of wart-node: $PIDOF_WART_NODE"
   fi
-  clear
-  echo "Node already installed!"
-  echo "PID of wart-node: $PIDOF_WART_NODE"
+  echo "[OK] Node installed!"
   sleep 2
 fi
 
