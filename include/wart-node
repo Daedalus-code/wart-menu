@@ -73,16 +73,11 @@ case $CHOICE in
 "1") sudo service wart-node start ;;
 "2") sudo service wart-node stop ;;
 "3")
-  # git clone
-  cd || exit
-  cd Warthog && git pull
-  # change directory
-  cd build || exit
   # display function
   display_result() {
-    dialog --title "$BACKTITLE" \
+    dialog --title "$TITLE" \
       --no-collapse \
-      --tailbox "$(ninja -j"$(echo "$(cat /proc/cpuinfo | grep -c "processor")-1" | bc 2>/dev/null)")" 15 70
+      --tailbox "$(cd || exit && cd Warthog && git pull && cd build || exit && ninja -j"$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)")" 15 70
   }
   display_result
   ;;
