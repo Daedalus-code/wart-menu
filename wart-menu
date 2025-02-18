@@ -1,0 +1,176 @@
+#!/bin/bash
+
+# do not edit below ############################################################
+
+# cyberpunk color scheme
+B0='\e[34m'       # Blue
+BL='\e[38;5;27m'  # Deep Blue (Shadow)
+GR='\e[90m'       # Grey
+N0='\033[0m'      # No color (reset)
+P0='\e[38;5;93m'  # Deep Purple (Base)
+P1='\e[38;5;99m'  # Bright Purple (Glow)
+P2='\e[38;5;129m' # Magenta-Purple (Secondary Glow)
+Y0='\e[33m'       # Yellow
+Y1='\e[38;5;226m' # Bright Yellow (Sharp Peak)
+
+MENU_VERSION="0.0.5" # Updated menu version
+
+# information with colors
+RESULT="${N0}[$(date)]${N0} ${B1}[INFO]${N0} ${P1}Wart-Menu v$MENU_VERSION${N0}
+
+${P1}                                      %%%
+                          .%%%%%%%%%%%%  %%${BL}
+                    %%%%%%%%%%%%%%%%%%%%%%%%
+                     %%%%%%%%%%%%%%%%%%%%%%%#%%${P0}
+                =%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${P1}
+          .%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${Y1}%%( )%%${Y0}
+        .%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      %%%%%%%%%%%${P2}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+.%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%=   *%%%%%%%
+*    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${P1}
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%= %%%%%%%%%%%%%%%
+      %%%%%%%%%%%%%%%%%%%%%%%%   %%+       @%%%%%%%${B0}
+      %%%%%%%%%%%%%%%%%%%%       .%%%%%%%%.  %%%%%%%
+      %%%%%%%%%%%%%%%=                %%%%%%  %%%
+     %%%%%%%%%%%     @                 %%%%%${BL}
+    %%%%%%%%.   %%%%
+   %%%%%%%.  %%%%%%
+  %%%%%%.  %%%%%%
+ %%%%%.  %%%%%%%"
+
+################################################################################
+
+install_update() {
+  printf '%b' "$RESULT${N0}\n"
+  cd || exit && cd wart-menu
+  # copy files
+  printf '%b' "${GR}\n"
+  cp wart.config /etc/wart-menu/
+  cp -rfv include/ /etc/wart-menu/ | column -t
+  printf '%b' "${N0}\n"
+  # if usr local bin
+  if [[ -d /usr/local/bin/ ]] &>/dev/null; then
+    # install wart-menu
+    sudo cp wart-menu /usr/local/bin/
+    # fix ownership
+    sudo chown -R "$(whoami)":"$(whoami)" /usr/local/bin/wart-menu
+    # make executable
+    chmod +x /usr/local/bin/wart-menu
+  fi
+  # if hive bin
+  if [[ -d /hive/bin/ ]] &>/dev/null; then
+    # install wart-menu
+    sudo mv wart-menu /hive/bin/
+    # fix ownership
+    sudo chown -R "$(whoami)":"$(whoami)" /hive/bin/wart-menu
+    # make executable
+    chmod +x /hive/bin/wart-menu
+  fi
+  # continue
+  read -r -p "Press Enter to continue" </dev/tty
+}
+
+# if missing
+if [[ ! -d /etc/wart-menu/ ]] &>/dev/null; then
+  echo "Creating install folder.."
+  # create directory
+  sudo mkdir /etc/wart-menu/ &>/dev/null
+  # fix ownership
+  sudo chown -R "$(whoami)":"$(whoami)" /etc/wart-menu/
+  sleep 1
+  # install_update function
+  echo "Installing files.."
+  install_update
+fi
+
+################################################################################
+
+source /etc/wart-menu/wart.config
+
+################################################################################
+
+# function to display the main dialog menu
+main_menu() {
+  dialog --clear --title "Wart-menu" \
+    --nocancel \
+    --menu "" 13 42 15 \
+    1 "Node             Warthog node" \
+    2 "Wallet           Warthog wallet" \
+    3 "Configuration    Menu config" \
+    4 "Network          Net-tools" \
+    5 "Update           Menu updates" \
+    6 "info             Information" \
+    0 "Quit             Exit menu" \
+    2>&1 >/dev/tty
+}
+
+# function for wart node #######################################################
+warthog_node() {
+  # wart-node menu
+  bash /etc/wart-menu/include/wart-node 2>/dev/null
+}
+
+# function for wart wallet #####################################################
+warthog_wallet() {
+  # wart-wallet menu
+  bash /etc/wart-menu/include/wart-wallet 2>/dev/null
+}
+
+# function for menu config #####################################################
+configuration() {
+  nano /etc/wart-menu/wart.config 2>/dev/null
+}
+
+# function to update the menu ##################################################
+menu_update() {
+  clear
+  # update
+  echo "Updating wart-menu.."
+  cd || exit && cd wart-menu && git pull
+  install_update
+  exit
+}
+
+# function for network tools ###################################################
+network_tools() {
+  # wart-wallet menu
+  bash /etc/wart-menu/include/network_tools 2>/dev/null
+}
+
+# function to display information ##############################################
+print_info() {
+  # display function
+  display_result() {
+    dialog --title "$BACKTITLE" \
+      --no-collapse \
+      --msgbox "[$(date)] [INFO] Wart-Menu v$MENU_VERSION" 5 65
+  }
+  display_result
+}
+
+# main loop ####################################################################
+while true; do
+  CHOICE=$(main_menu)
+
+  case $CHOICE in
+  "1") warthog_node ;;   # node menu
+  "2") warthog_wallet ;; # wallet menu
+  "3") configuration ;;  # configuration
+  "4") network_tools ;;  # network tools
+  "5") menu_update ;;    # menu update
+  "6") print_info ;;     # print information
+  "0") clear && exit ;;  # exit menu
+  "*") break ;;
+  esac
+done
+
+################################################################################
+
+# shellcheck disable=SC2093 # dialog exec
+exec /bin/bash "$0" "$@"
+clear
+
+# END
