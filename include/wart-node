@@ -6,6 +6,32 @@ source /etc/wart-menu/wart.config
 
 ################################################################################
 
-# CODE
+# install check
+if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
+
+  # update system
+  sudo apt update
+  sudo apt install git
+  sudo apt install build-essential meson ninja-build
+  # git clone
+  cd || exit && git clone https://github.com/warthog-network/Warthog
+  # change directory
+  cd Warthog
+  # build
+  meson build --buildtype=release
+  # change directory
+  cd build
+  # ninja
+  ninja
+  # change directory
+  cd src/node/
+  # start node
+  ./wart-node
+
+else
+  echo "Node already installed!"
+  echo "PID of wart-node: $(pidof wart-node)"
+  sleep 2
+fi
 
 # END

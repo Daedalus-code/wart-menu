@@ -146,7 +146,7 @@ print_info() {
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "[$(date)] [INFO] Wart-Menu v$MENU_VERSION" 5 65
+      --msgbox "[$(date)] - [INFO] Wart-Menu v$MENU_VERSION" 5 65
   }
   display_result
 }
