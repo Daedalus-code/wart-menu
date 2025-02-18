@@ -14,7 +14,7 @@ MENU_VERSION="0.0.7" # Updated menu version
 # information with colors
 RESULT="${N0}[$(date)]${N0} ${BL}[INFO]${N0} ${P1}Wart-Menu v$MENU_VERSION${N0}
 
-${GR}                                      %%%
+                                      %%%
                           .%%%%%%%%%%%%  %%
                     %%%%%%%%%%%%%%%%%%%%%%%%
                      %%%%%%%%%%%%%%%%%%%%%%%#%%${R0}
