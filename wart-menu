@@ -50,6 +50,7 @@ install_update() {
   # copy files
   cp wart.config /etc/wart-menu/
   cp -rfv include/ /etc/wart-menu/ | column -t
+  echo
   # if usr local bin
   if [[ -d /usr/local/bin/ ]] &>/dev/null; then
     # install wart-menu
