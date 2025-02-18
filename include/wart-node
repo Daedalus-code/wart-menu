@@ -9,6 +9,7 @@ source /etc/wart-menu/wart.config
 # install check
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
+  clear
   # update system
   sudo apt update
   sudo apt install git
@@ -29,6 +30,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   ./wart-node
 
 else
+  clear
   echo "Node already installed!"
   echo "PID of wart-node: $(pidof wart-node)"
   sleep 2
