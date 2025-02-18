@@ -21,7 +21,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   # build
   meson build --buildtype=release
   # change directory
-  cd build
+  cd build || exit
   # ninja -j"minus one thread"
   ninja -j"$(echo "$(cat /proc/cpuinfo | grep -c "processor")-1" | bc 2>/dev/null)"
   # if missing
@@ -43,7 +43,7 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   # reload
   sudo systemctl-reload
   # change directory
-  cd src/node/
+  cd src/node/ || exit
   # start node
   ./wart-node
 fi
@@ -76,13 +76,18 @@ case $CHOICE in
   # git clone
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
-  cd Warthog
+  cd Warthog || exit
   # build
   meson build --buildtype=release
   # change directory
-  cd build
-  # ninja -j"minus one thread"
-  ninja -j"$(echo "$(cat /proc/cpuinfo | grep -c "processor")-1" | bc 2>/dev/null)"
+  cd build || exit
+  # display function
+  display_result() {
+    dialog --title "$BACKTITLE" \
+      --no-collapse \
+      --tailbox "$(ninja -j"$(echo "$(cat /proc/cpuinfo | grep -c "processor")-1" | bc 2>/dev/null)")" 15 70
+  }
+  display_result
   ;;
 esac
 
