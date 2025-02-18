@@ -19,7 +19,7 @@ main_menu() {
     --menu "" 9 42 8 \
     1 "Network          Configuration" \
     2 "Wireless         Wi-Fi Network" \
-    0 "Exit" 2>&1 >/dev/tty
+    0 "Exit             Return" 2>&1 >/dev/tty
 }
 
 # function to display the network menu #########################################

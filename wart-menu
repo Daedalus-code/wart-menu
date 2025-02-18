@@ -103,7 +103,7 @@ main_menu() {
     4 "Network          Net-tools" \
     5 "Update           Menu updates" \
     6 "info             Information" \
-    0 "Quit             Exit menu" \
+    0 "Exit             Return" \
     2>&1 >/dev/tty
 }
 
