@@ -73,13 +73,16 @@ case $CHOICE in
 "1") sudo service wart-node start ;;
 "2") sudo service wart-node stop ;;
 "3")
-  # display function
-  display_result() {
-    dialog --title "$TITLE" \
-      --no-collapse \
-      --tailbox "$(cd || exit && cd Warthog && git pull && cd build || exit && ninja -j"$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)")" 15 70
-  }
-  display_result
+  # start counting (seconds)
+  START="$SECONDS"
+  # change directory, ninja
+  cd || exit && cd Warthog && git pull && cd build || exit && ninja -j"$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
+  # seconds since start
+  DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
+  # convert seconds
+  TIMER=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
+  echo
+  read -r -p "$TIMER - Press Enter to continue" </dev/tty
   ;;
 esac
 
