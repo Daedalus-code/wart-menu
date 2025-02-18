@@ -110,18 +110,18 @@ main_menu() {
 # function for wart node #######################################################
 warthog_node() {
   # wart-node menu
-  bash /etc/wart-menu/include/wart-node 2>/dev/null
+  bash /etc/wart-menu/include/wart-node
 }
 
 # function for wart wallet #####################################################
 warthog_wallet() {
   # wart-wallet menu
-  bash /etc/wart-menu/include/wart-wallet 2>/dev/null
+  bash /etc/wart-menu/include/wart-wallet
 }
 
 # function for menu config #####################################################
 configuration() {
-  nano /etc/wart-menu/wart.config 2>/dev/null
+  nano /etc/wart-menu/wart.config
 }
 
 # function to update the menu ##################################################
@@ -137,7 +137,7 @@ menu_update() {
 # function for network tools ###################################################
 network_tools() {
   # wart-wallet menu
-  bash /etc/wart-menu/include/network_tools 2>/dev/null
+  bash /etc/wart-menu/include/network_tools
 }
 
 # function to display information ##############################################
