@@ -1,0 +1,138 @@
+#!/bin/bash
+
+# do not edit below ############################################################
+
+source /etc/wart-menu/wart.config
+
+################################################################################
+
+# if missing
+if ! [ -x "$(command -v nmcli)" ]; then
+  # install missing
+  sudo apt-get install network-manager
+fi
+
+# function to display the main menu ############################################
+main_menu() {
+  dialog --clear --title "Network-Tools" \
+    --nocancel \
+    --menu "" 9 42 8 \
+    1 "Network          Configuration" \
+    2 "Wireless         Wi-Fi Network" \
+    0 "Quit             Exit menu" 2>&1 >/dev/tty
+}
+
+# function to display the network menu #########################################
+wireless_menu() {
+  # get wifi list
+  WIFI_LIST=$(nmcli -t -f SSID,SIGNAL,BARS,SECURITY dev wifi list)
+  # check if any wifi networks are found
+  if [ -z "$WIFI_LIST" ]; then
+    dialog --msgbox "No Wi-Fi networks found!" 6 40
+    exit 1
+  fi
+  # create a formatted menu for dialog
+  MENU_ITEMS=()
+  while IFS=: read -r SSID SIGNAL BARS SECURITY; do
+    MENU_ITEMS+=("$SSID" "Signal: $SIGNAL% $BARS | Security: $SECURITY")
+  done <<<"$WIFI_LIST"
+  # show menu with available wi-fi networks
+  WIDTH="$(echo "$(echo "$MENU_ITEMS" | wc -L)+49" | bc 2>/dev/null)"
+  LENGTH="$(echo "$(echo "$MENU_ITEMS" | wc -l)+7" | bc 2>/dev/null)"
+  SELECTED_NETWORK=$(dialog --title "Wi-Fi Networks Found" \
+    --menu "" "$LENGTH" "$WIDTH" 15 \
+    "${MENU_ITEMS[@]}" 2>&1 >/dev/tty)
+  # clear dialog output
+  clear
+  # show selection result
+  if [ -z "$SELECTED_NETWORK" ]; then
+    # display function
+    display_result() {
+      dialog --title "$SELECTED_NETWORK" \
+        --no-collapse \
+        --msgbox "No network selected!"
+    }
+    display_result
+  fi
+
+  # show second menu with options
+  ACTION=$(dialog --title "$SELECTED_NETWORK" \
+    --nocancel \
+    --menu "" 9 21 8 \
+    1 "Connect" \
+    2 "Disconnect" \
+    3 "Quit" 2>&1 >/dev/tty)
+
+  clear
+  # perform action based on selection
+  case "$ACTION" in
+  "1")
+    # check if the network is open or requires a password
+    SECURITY_TYPE=$(nmcli -t -f SSID,SECURITY dev wifi list | grep "^$SELECTED_NETWORK" | cut -d: -f2)
+
+    if [[ "$SECURITY_TYPE" == "--" || -z "$SECURITY_TYPE" ]]; then
+      echo "Connecting to open network: $SELECTED_NETWORK..."
+      sudo nmcli dev wifi connect "$SELECTED_NETWORK"
+    else
+      # prompt for wi-fi password
+      WIFI_PASSWORD=$(dialog --title "Wi-Fi Password" --passwordbox "Enter password for $SELECTED_NETWORK:" 8 42 2>&1 >/dev/tty)
+      # clear screen
+      clear
+      # no password
+      if [ -z "$WIFI_PASSWORD" ]; then
+        # display function
+        display_result() {
+          dialog --title "$SELECTED_NETWORK" \
+            --no-collapse \
+            --msgbox "No password entered. Connection aborted!"
+        }
+        display_result
+      fi
+      echo "Connecting to secured network: $SELECTED_NETWORK..."
+      sudo nmcli dev wifi connect "$SELECTED_NETWORK" password "$WIFI_PASSWORD"
+      # display function
+      display_result() {
+        dialog --title "$SELECTED_NETWORK" \
+          --no-collapse \
+          --msgbox "Connected to $SELECTED_NETWORK!"
+      }
+      display_result
+    fi
+    ;;
+  "2")
+    echo "Disconnecting from Wi-Fi..."
+    sudo nmcli con down "$SELECTED_NETWORK"
+    # display function
+    display_result() {
+      dialog --title "$SELECTED_NETWORK" \
+        --no-collapse \
+        --msgbox "Disconnected!"
+    }
+    display_result
+    ;;
+  "*")
+    # display function
+    display_result() {
+      dialog --title "$SELECTED_NETWORK" \
+        --no-collapse \
+        --msgbox "Action canceled!"
+    }
+    display_result
+    ;;
+  esac
+}
+
+# main loop ####################################################################
+while true; do
+  CHOICE=$(main_menu)
+  case $CHOICE in
+
+  "1") sudo nano /etc/netplan/* ;; # ethernet
+  "2") wireless_menu ;;            # wireless
+  "0") exit ;;                     # exit
+  "*") break ;;                    # break
+
+  esac
+done
+
+# END
