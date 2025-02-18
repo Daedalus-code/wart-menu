@@ -35,17 +35,17 @@ RESULT="${N0}[$(date)]${N0} ${BL}[INFO]${N0} ${P1}Wart-Menu v$MENU_VERSION${N0}
     %%%%%%%%.   %%%%
    %%%%%%%.  %%%%%%
   %%%%%%.  %%%%%%
- %%%%%.  %%%%%%%${N0}
+ %%%%%.  %%%%%%%${GR}
  "
 
 ################################################################################
 
 install_update() {
-  printf '%b' "$RESULT${N0}\n"
   cd || exit && cd wart-menu || exit
   # copy files
   cp wart.config /etc/wart-menu/
   cp -rfv include/ /etc/wart-menu/ | column -t
+  printf '%b' "$RESULT${N0}\n"
   echo
   # if usr local bin
   if [[ -d /usr/local/bin/ ]] &>/dev/null; then
