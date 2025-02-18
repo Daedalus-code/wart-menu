@@ -2,7 +2,7 @@
 
 # do not edit below ############################################################
 
-# cyberpunk color scheme
+# color scheme
 B0='\e[34m'       # Blue
 BL='\e[38;5;27m'  # Deep Blue (Shadow)
 GR='\e[90m'       # Grey
