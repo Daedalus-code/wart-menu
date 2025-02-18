@@ -46,18 +46,46 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   cd src/node/
   # start node
   ./wart-node
-
-else
-  clear
-  # pidof wart-node
-  PIDOF_WART_NODE="$(pidof wart-node 2>/dev/null)"
-  if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    echo "[!!] PID of wart-node: Offline"
-  else
-    echo "[OK] PID of wart-node: $PIDOF_WART_NODE"
-  fi
-  echo "[OK] Node installed!"
-  sleep 2
 fi
+
+################################################################################
+
+HEIGHT="10"
+WIDTH="42"
+CHOICE_HEIGHT="4"
+BACKTITLE="$(uname -a | xargs)"
+TITLE="Wart-Node"
+MENU="Wart Node Options"
+
+OPTIONS=(
+  1 "Start            Run wart-node"
+  2 "Stop             Stop node"
+  3 "Update           Update node")
+
+CHOICE=$(dialog --clear \
+  --backtitle "$BACKTITLE" \
+  --title "$TITLE" \
+  --menu "$MENU" \
+  $HEIGHT $WIDTH $CHOICE_HEIGHT \
+  "${OPTIONS[@]}" \
+  2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+"1") sudo service wart-node start ;;
+"2") sudo service wart-node stop ;;
+"3")
+  # git clone
+  cd || exit && git clone https://github.com/warthog-network/Warthog
+  # change directory
+  cd Warthog
+  # build
+  meson build --buildtype=release
+  # change directory
+  cd build
+  # ninja -j"minus one thread"
+  ninja -j"$(echo "$(cat /proc/cpuinfo | grep -c "processor")-1" | bc 2>/dev/null)"
+  ;;
+esac
 
 # END
