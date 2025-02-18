@@ -74,11 +74,8 @@ case $CHOICE in
 "2") sudo service wart-node stop ;;
 "3")
   # git clone
-  cd || exit && git clone https://github.com/warthog-network/Warthog
-  # change directory
-  cd Warthog || exit
-  # build
-  meson build --buildtype=release
+  cd || exit
+  cd Warthog && git pull
   # change directory
   cd build || exit
   # display function
