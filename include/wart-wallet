@@ -49,8 +49,15 @@ wallet_file() {
 
 # function for create wallet ###################################################
 create_wallet() {
-  echo "BETA! Still building.."
-  sleep 1
+  # help
+  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -c)"
+  # display function
+  display_result() {
+    dialog --title "$BACKTITLE" \
+      --no-collapse \
+      --msgbox "$RESULT" 0 0
+  }
+  display_result
 }
 
 # function to restore wallet ###################################################
