@@ -9,7 +9,6 @@ source /etc/wart-menu/wart.config
 # function to display the main dialog menu
 main_menu() {
   dialog --clear --title "Wart-wallet" \
-    --nocancel \
     --menu "" 15 28 16 \
     1 "Wallet balance" \
     2 "Wallet address" \
@@ -19,7 +18,6 @@ main_menu() {
     6 "Restore wallet" \
     7 "Print version" \
     8 "Help" \
-    0 "Return" \
     2>&1 >/dev/tty
 }
 
@@ -146,15 +144,8 @@ while true; do
   "6") restore_wallet ;; # restore old wallet
   "7") print_version ;;  # print wallet version
   "8") print_help ;;     # print help commands
-  "0") clear && exit ;;  # exit menu
   "*") break ;;
   esac
 done
-
-################################################################################
-
-# shellcheck disable=SC2093 # dialog exec
-exec /bin/bash "$0" "$@"
-clear
 
 # END
