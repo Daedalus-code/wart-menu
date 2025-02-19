@@ -130,8 +130,8 @@ data_usage() {
   ifconfig >/tmp/ifconfig
 
   # extract RX and TX bytes
-  IFCONFIG_RX_BYTE=$(grep "RX" /tmp/ifconfig | head -1 | awk '{ print $5 }')
-  IFCONFIG_TX_BYTE=$(grep "TX" /tmp/ifconfig | head -1 | awk '{ print $5 }')
+  IFCONFIG_RX_BYTE=$(grep "RX packets" /tmp/ifconfig | awk '{ print $5 }' | sort -n | tail -1)
+  IFCONFIG_TX_BYTE=$(grep "TX packets" /tmp/ifconfig | awk '{ print $5 }' | sort -n | tail -1)
   # fetch system uptime
   UPTIME_PROC_SECONDS=$(awk -F. '{print $1}' /proc/uptime)
   # time format
