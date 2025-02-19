@@ -51,7 +51,7 @@ fi
 # function to display help #####################################################
 print_help() {
   # help
-  RESULT="$("$WARTHOG_DIR"/node/./wart-node --file="$WARTHOG_JSON" --help)"
+  RESULT="$("$WARTHOG_DIR"/node/./wart-node --help)"
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
