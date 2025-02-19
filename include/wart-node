@@ -85,6 +85,13 @@ PIDOF_WART_NODE="$(cat /tmp/pdown.tmp 2>/dev/null)"
 LATEST_RELEASE=$(cat /tmp/ltrwr.tmp 2>/dev/null)
 INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
 
+# does not copy
+if [[ ! "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
+  NEW_RELEASE="!"
+else
+  NEW_RELEASE=""
+fi
+
 # if online
 if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
   NODE_STATUS="Online"
@@ -113,7 +120,7 @@ UPTIME_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/
 ################################################################################
 
 TITLE="Wart-Node"
-MENU="Node...: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE
+MENU="Node...: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE $NEW_RELEASE
 Status.: $NODE_STATUS PID: $PIDOF_WART_NODE
 Uptime.: $UPTIME_FORMATTED"
 CHOICE_HEIGHT="4"
