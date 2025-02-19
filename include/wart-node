@@ -115,7 +115,7 @@ START_TIME_SECONDS=$((START_TIME / UPTIME_TICKS))
 # get total system uptime in seconds
 SYSTEM_UPTIME=$(awk '{print $1}' /proc/uptime | cut -d. -f1)
 # calculate into days
-SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/3600" | bc 2>/dev/null)"
+SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
 UPTIME_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))
 
