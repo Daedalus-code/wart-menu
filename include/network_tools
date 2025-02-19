@@ -40,11 +40,9 @@ wireless_menu() {
 
   # show second menu with options
   ACTION=$(dialog --title "$SELECTED_NETWORK" \
-    --nocancel \
-    --menu "" 9 21 8 \
+    --menu "" 8 21 8 \
     1 "Connect" \
-    2 "Disconnect" \
-    0 "Return" 2>&1 >/dev/tty)
+    2 "Disconnect" 2>&1 >/dev/tty)
 
   # perform action based on selection
   case "$ACTION" in
