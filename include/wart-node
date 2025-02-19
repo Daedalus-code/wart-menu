@@ -100,9 +100,9 @@ INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
 
 # does not copy
 if [[ "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
-  NEW_RELEASE="!"
+  NEW_RELEASE="Update!"
 else
-  NEW_RELEASE=""
+  NEW_RELEASE="OK"
 fi
 
 # if online
