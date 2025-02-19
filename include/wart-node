@@ -153,6 +153,7 @@ case $CHOICE in
 "2")
   # if any data
   if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
+    # stop wart-node
     sudo service wart-node stop
   else
     echo "Nothing to stop!"
@@ -160,6 +161,11 @@ case $CHOICE in
   fi
   ;;
 "3")
+  # if any data
+  if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
+    # stop wart-node
+    sudo service wart-node stop
+  fi
   # start counting (seconds)
   START="$SECONDS"
   # change directory, ninja, -jall_threads-1 buffer thread
@@ -167,8 +173,8 @@ case $CHOICE in
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
-  TIMER=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
-  read -r -p "Duration: $TIMER - Press Enter to continue" </dev/tty
+  TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
+  read -r -p "Duration: $TIMER_FORMATTED - Press Enter to continue" </dev/tty
   ;;
 esac
 
