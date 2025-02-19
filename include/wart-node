@@ -122,7 +122,7 @@ fi
 data_usage() {
 
   # if not installed
-  if ! [ -x "$(command -v net-tools)" ] &>/dev/null; then
+  if ! [ -x "$(command -v ifconfig)" ] &>/dev/null; then
     sudo apt-get install net-tools -y
   fi
 
