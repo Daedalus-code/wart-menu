@@ -90,7 +90,7 @@ source /etc/wart-menu/wart.config
 
 # function to display the main dialog menu
 main_menu() {
-  dialog --clear --title "Wart-menu" \
+  dialog --clear --title "Wart-Menu" \
     --nocancel \
     --menu "" 13 42 15 \
     1 "Node             Warthog node" \

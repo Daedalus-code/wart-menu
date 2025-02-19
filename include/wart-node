@@ -52,25 +52,35 @@ fi
 OWNER="warthog-network"
 REPO="Warthog"
 # if missing, fetch the latest release tag from gitHub api, fetch wart-node version
-if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
+if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp || ! -f /tmp/pdown.tmp ]] &>/dev/null; then
   echo "$(curl -s "https://api.github.com/repos/$OWNER/$REPO/releases/latest" | jq -r .tag_name)" >/tmp/ltrwr.tmp
   echo "$(cd "$WARTHOG_DIR"/node && ./wart-node --version | awk '{ print $2 }' | tr -d 'v')" >/tmp/rnwr.tmp
+  echo "$(pidof wart-node)" >/tmp/pdown.tmp
 fi
 
 # installed and latest release
+PIDOF_WART_NODE="$(cat /tmp/pdown.tmp 2>/dev/null)"
 LATEST_RELEASE=$(cat /tmp/ltrwr.tmp 2>/dev/null)
 INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
 
+# if online
+if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
+  NODE_STATUS="Online"
+else
+  NODE_STATUS="Offline"
+fi
+
 ################################################################################
 
-HEIGHT="10"
+HEIGHT="11"
 WIDTH="42"
 CHOICE_HEIGHT="4"
 TITLE="Wart-Node"
-MENU="Installed: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE"
+MENU="Installed: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE
+Status: $NODE_STATUS (PID: $PIDOF_WART_NODE)"
 
 OPTIONS=(
-  1 "Start            Run Wart-node"
+  1 "Start            Run wart-node"
   2 "Stop             Stop node"
   3 "Update           Update node")
 

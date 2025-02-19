@@ -93,8 +93,8 @@ print_help() {
 HEIGHT="14"
 WIDTH="28"
 CHOICE_HEIGHT="14"
-BACKTITLE="Warthog wallet"
-TITLE="Wart-wallet"
+BACKTITLE="Warthog Wallet"
+TITLE="Wart-Wallet"
 MENU=""
 
 OPTIONS=(
