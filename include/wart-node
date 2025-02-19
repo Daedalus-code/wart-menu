@@ -195,7 +195,7 @@ data_usage() {
   # display the result
   RESULT="Download Data
 -------------------------------------------
-$(grep "RX" /tmp/ifconfig | head -1 | awk -FRX '{ print $2 }' | xargs)
+$(grep "RX packets" /tmp/ifconfig | sort -n | tail -1 | awk -FRX '{ print $2 }' | xargs)
 -------------------------------------------
 RX Current.: $CURRENT_RX_RATE
 RX Daily...: $DAILY_USAGE_RX
@@ -205,7 +205,7 @@ RX Yearly..: $YEARLY_USAGE_RX
 
 Upload Data
 -------------------------------------------
-$(grep "TX" /tmp/ifconfig | head -1 | awk -FTX '{ print $2 }' | xargs)
+$(grep "TX packets" /tmp/ifconfig | sort -n | tail -1 | awk -FTX '{ print $2 }' | xargs)
 -------------------------------------------
 TX Current.: $CURRENT_TX_RATE
 TX Daily...: $DAILY_USAGE_TX
