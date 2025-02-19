@@ -85,12 +85,12 @@ wallet_file() {
       --no-collapse \
       --msgbox "$(
         echo "$(
+          ls -lRt "$WARTHOG_CHAIN"
+          ls -lRt "$WARTHOG_PEERS"
+          echo
           ls -lRt "$WARTHOG_DIR"/wallet/
           echo
           ls -lRt "$WARTHOG_DIR"/node/
-          echo
-          ls -lRt "$WARTHOG_CHAIN"
-          ls -lRt "$WARTHOG_PEERS"
           echo
         )"
       )" 0 0
