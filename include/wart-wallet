@@ -33,9 +33,9 @@ print_address() {
 # function to send transaction #################################################
 send_tx() {
   # prompt user send transaction
-  if dialog --stdout --title "Sending transaction!" \
-    --backtitle "Send transaction?" \
-    --yesno "Yes: Send! No: Go back!" 5 28; then
+  if dialog --stdout --title "Send transaction?" \
+    --backtitle "Sending transaction!" \
+    --yesno "Yes: Send! No: Go back!" 5 30; then
 
     # input address
     RECEIPENT_ADDRESS=$(
@@ -91,9 +91,9 @@ wallet_file() {
 # function for create wallet ###################################################
 create_wallet() {
   # prompt user create new wallet
-  if dialog --stdout --title "Creating new wallet!" \
-    --backtitle "Create new wallet?" \
-    --yesno "Yes: Create! No: Go back!" 5 28; then
+  if dialog --stdout --title "Create new wallet?" \
+    --backtitle "Creating new wallet!" \
+    --yesno "Yes: Create! No: Return!" 5 30; then
     # help
     RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -c)"
     # display function
@@ -109,9 +109,9 @@ create_wallet() {
 # function to restore wallet ###################################################
 restore_wallet() {
   # prompt user create new wallet
-  if dialog --stdout --title "Restoring old wallet!" \
-    --backtitle "Restore old wallet?" \
-    --yesno "Yes: Restore! No: Go back!" 5 28; then
+  if dialog --stdout --title "Restore old wallet?" \
+    --backtitle "Restoring old wallet!" \
+    --yesno "Yes: Restore! No: Return!" 5 30; then
 
     # input private key
     PRIVATEKEY=$(
