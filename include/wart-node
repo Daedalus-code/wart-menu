@@ -135,10 +135,10 @@ UPTIME_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/
 ################################################################################
 
 TITLE="Wart-Node"
-MENU="Node...: v$INSTALLED_RELEASE > Latest: v$LATEST_RELEASE $NEW_RELEASE
-Status.: $NODE_STATUS PID: $PIDOF_WART_NODE
-Uptime.: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
-Load...: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
+MENU="Version.: v$INSTALLED_RELEASE > Latest: [v$LATEST_RELEASE] $NEW_RELEASE
+Status..: $NODE_STATUS PID: $PIDOF_WART_NODE
+Uptime..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
+Load....: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
 CHOICE_HEIGHT="4"
 HEIGHT="14"
 WIDTH="42"
