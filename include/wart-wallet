@@ -33,7 +33,7 @@ print_address() {
 # function to send transaction #################################################
 send_tx() {
   # prompt user send transaction
-  if ! dialog --stdout --title "Sending transaction!" \
+  if dialog --stdout --title "Sending transaction!" \
     --backtitle "Send transaction?" \
     --yesno "Yes: Send! No: Go back!" 5 28; then
 
@@ -91,7 +91,7 @@ wallet_file() {
 # function for create wallet ###################################################
 create_wallet() {
   # prompt user create new wallet
-  if ! dialog --stdout --title "Creating new wallet!" \
+  if dialog --stdout --title "Creating new wallet!" \
     --backtitle "Create new wallet?" \
     --yesno "Yes: Create! No: Go back!" 5 28; then
     # help
@@ -109,7 +109,7 @@ create_wallet() {
 # function to restore wallet ###################################################
 restore_wallet() {
   # prompt user create new wallet
-  if ! dialog --stdout --title "Restoring old wallet!" \
+  if dialog --stdout --title "Restoring old wallet!" \
     --backtitle "Restore old wallet?" \
     --yesno "Yes: Restore! No: Go back!" 5 28; then
 
