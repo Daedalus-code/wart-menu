@@ -83,7 +83,17 @@ wallet_file() {
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "$(ls -lRt "$WARTHOG_DIR"/wallet/)" 0 0
+      --msgbox "$(
+        echo "$(
+          ls -lRt "$WARTHOG_DIR"/wallet/
+          echo
+          ls -lRt "$WARTHOG_DIR"/node/
+          echo
+          ls -lRt "$WARTHOG_CHAIN"
+          ls -lRt "$WARTHOG_PEERS"
+          echo
+        )"
+      )" 0 0
   }
   display_result
 }
