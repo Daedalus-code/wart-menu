@@ -92,15 +92,12 @@ else
   NODE_STATUS="Offline"
 fi
 
-################################################################################
-
-# process name (replace with the actual process name)
-PROCESS_NAME="wart-node"
-
-if [ -z "$PID" ]; then
-  echo "Process $PROCESS_NAME is not running."
-  exit 1
+# if zero
+if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
+  PIDOF_WART_NODE="null"
 fi
+
+################################################################################
 
 # get process start time from /proc/[PID]/stat (22nd field)
 START_TIME=$(awk '{print $22}' /proc/$PIDOF_WART_NODE/stat)
@@ -110,18 +107,18 @@ UPTIME_TICKS=$(getconf CLK_TCK)
 START_TIME_SECONDS=$((START_TIME / UPTIME_TICKS))
 # get total system uptime in seconds
 SYSTEM_UPTIME=$(awk '{print $1}' /proc/uptime | cut -d. -f1)
-# calculate process uptime
-PROCESS_UPTIME=$((SYSTEM_UPTIME - START_TIME_SECONDS))
+# format output in hours, minutes and seconds
+UPTIME_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))
 
 ################################################################################
 
-HEIGHT="11"
-WIDTH="42"
-CHOICE_HEIGHT="4"
 TITLE="Wart-Node"
-MENU="Installed: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE
-Process $PROCESS_NAME (PID: $PIDOF_WART_NODE) $(date -u -d @$PROCESS_UPTIME +%H:%M:%S)
-Status: $NODE_STATUS"
+MENU="Node...: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE
+Status.: $NODE_STATUS PID: $PIDOF_WART_NODE
+Uptime.: $UPTIME_FORMATTED"
+CHOICE_HEIGHT="4"
+HEIGHT="12"
+WIDTH="42"
 
 OPTIONS=(
   1 "Start            Run wart-node"
