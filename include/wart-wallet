@@ -32,8 +32,49 @@ print_address() {
 
 # function to send transaction #################################################
 send_tx() {
-  echo "BETA! Still building.."
-  sleep 1
+  # prompt user send transaction
+  if ! dialog --stdout --title "Sending transaction!" \
+    --backtitle "Send transaction?" \
+    --yesno "Yes: Send! No: Go back!" 5 28; then
+
+    # input address
+    RECEIPENT_ADDRESS=$(
+      dialog --title "Address" \
+        --inputbox "Enter Address:" 8 40 \
+        3>&1 1>&2 2>&3 3>&-
+    )
+    # input amount
+    RECEIPENT_AMOUNT=$(
+      dialog --title "Amount" \
+        --inputbox "Enter Amount:" 8 40 \
+        3>&1 1>&2 2>&3 3>&-
+    ) # input fee
+    RECEIPENT_FEE=$(
+      dialog --title "FEE" \
+        --inputbox "Enter Fee:" 8 40 \
+        3>&1 1>&2 2>&3 3>&-
+    ) # input nonce
+    RECEIPENT_NONCE=$(
+      dialog --title "nonce" \
+        --inputbox "Enter nonce:" 8 40 \
+        3>&1 1>&2 2>&3 3>&-
+    )
+
+    # if zero
+    if [[ -z "$RECEIPENT_ADDRESS" || -z "$RECEIPENT_AMOUNT" || -z "$RECEIPENT_FEE" ]] &>/dev/null; then
+      break
+    fi
+
+    # help
+    RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -s --to="$RECEIPENT_ADDRESS" --amount="$RECEIPENT_AMOUNT" --fee="$RECEIPENT_FEE" --nonce="$RECEIPENT_NONCE")"
+    # display function
+    display_result() {
+      dialog --title "$BACKTITLE" \
+        --no-collapse \
+        --msgbox "$RESULT" 0 0
+    }
+    display_result
+  fi
 }
 
 # function for wallet files ####################################################
@@ -49,21 +90,51 @@ wallet_file() {
 
 # function for create wallet ###################################################
 create_wallet() {
-  # help
-  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -c)"
-  # display function
-  display_result() {
-    dialog --title "$BACKTITLE" \
-      --no-collapse \
-      --msgbox "$RESULT" 0 0
-  }
-  display_result
+  # prompt user create new wallet
+  if ! dialog --stdout --title "Creating new wallet!" \
+    --backtitle "Create new wallet?" \
+    --yesno "Yes: Create! No: Go back!" 5 28; then
+    # help
+    RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -c)"
+    # display function
+    display_result() {
+      dialog --title "$BACKTITLE" \
+        --no-collapse \
+        --msgbox "$RESULT" 0 0
+    }
+    display_result
+  fi
 }
 
 # function to restore wallet ###################################################
 restore_wallet() {
-  echo "BETA! Still building.."
-  sleep 1
+  # prompt user create new wallet
+  if ! dialog --stdout --title "Restoring old wallet!" \
+    --backtitle "Restore old wallet?" \
+    --yesno "Yes: Restore! No: Go back!" 5 28; then
+
+    # input private key
+    PRIVATEKEY=$(
+      dialog --title "Privatekey" \
+        --inputbox "Enter privatekey:" 8 40 \
+        3>&1 1>&2 2>&3 3>&-
+    )
+
+    # if zero
+    if [[ -z "$PRIVATEKEY" ]] &>/dev/null; then
+      break
+    fi
+
+    # help
+    RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -r --restore="$PRIVATEKEY")"
+    # display function
+    display_result() {
+      dialog --title "$BACKTITLE" \
+        --no-collapse \
+        --msgbox "$RESULT" 0 0
+    }
+    display_result
+  fi
 }
 
 # function to display help #####################################################
