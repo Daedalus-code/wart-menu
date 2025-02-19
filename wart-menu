@@ -9,7 +9,7 @@ GR='\e[90m'      # Grey
 N0='\033[0m'     # No color (reset)
 P1='\e[38;5;99m' # Bright Purple (Glow)
 
-MENU_VERSION="0.1.1" # Updated menu version
+MENU_VERSION="0.2.1" # Updated menu version
 
 # information with colors
 RESULT="${N0}[$(date)]${N0} ${BL}[INFO]${N0} ${P1}Wart-Menu v$MENU_VERSION${N0}
