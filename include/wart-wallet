@@ -48,25 +48,8 @@ print_address() {
 
 # function to send transaction #################################################
 send_tx() {
-  TO_ADDRESS=$(dialog --inputbox "Enter recipient address:" 8 60 2>&1 >/dev/tty)
-  AMOUNT=$(dialog --inputbox "Enter amount to send:" 8 60 2>&1 >/dev/tty)
-  FEE=$(dialog --inputbox "Enter transaction fee:" 8 60 2>&1 >/dev/tty)
-  NONCE=$(dialog --inputbox "Enter nonce:" 8 60 2>&1 >/dev/tty)
-  # if any data
-  if [[ -n "$TO_ADDRESS" && -n "$AMOUNT" && -n "$FEE" && -n "$NONCE" ]] &>/dev/null; then
-    CMD="--send --to=$TO_ADDRESS --amount=$AMOUNT --fee=$FEE --nonce=$NONCE"
-    # display function
-    display_result() {
-      dialog --title "$BACKTITLE" \
-        --no-collapse \
-        --msgbox "$(wallet_command)" 10 60
-    }
-    display_result
-  else
-    clear
-    echo "Missing data!"
-    sleep 1
-  fi
+  echo "BETA! Still building.."
+  sleep 1
 }
 
 # function for wallet files ####################################################
@@ -82,22 +65,14 @@ wallet_file() {
 
 # function for create wallet ###################################################
 create_wallet() {
-  dialog --title "Create Wallet" --yesno "Do you want to create a new wallet?" 7 60
-  RESPONSE=$?
-  if [ $RESPONSE -eq 0 ]; then
-    CMD="--create"
-    display_function
-  fi
+  echo "BETA! Still building.."
+  sleep 1
 }
 
 # function to restore wallet ###################################################
 restore_wallet() {
-  RESTORE_KEY=$(dialog --inputbox "Enter the private key to restore wallet:" 10 60 2>&1 >/dev/tty)
-  # if any data
-  if [[ -n "$RESTORE_KEY" ]] &>/dev/null; then
-    CMD="--restore=$RESTORE_KEY"
-    display_function
-  fi
+  echo "BETA! Still building.."
+  sleep 1
 }
 
 # function to display the version ##############################################
@@ -115,12 +90,12 @@ print_help() {
 }
 
 # menu #########################################################################
-HEIGHT="15"
+HEIGHT="14"
 WIDTH="28"
-CHOICE_HEIGHT="16"
-BACKTITLE="Backtitle here"
-TITLE="Title here"
-MENU="Choose one of the following options:"
+CHOICE_HEIGHT="14"
+BACKTITLE="Warthog wallet"
+TITLE="Wart-wallet"
+MENU=""
 
 OPTIONS=(
   1 "Wallet balance"
