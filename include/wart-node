@@ -125,7 +125,7 @@ Status.: $NODE_STATUS PID: $PIDOF_WART_NODE
 Uptime.: $UPTIME_FORMATTED
 Load: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
 CHOICE_HEIGHT="4"
-HEIGHT="12"
+HEIGHT="13"
 WIDTH="42"
 
 OPTIONS=(
