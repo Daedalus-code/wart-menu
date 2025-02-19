@@ -141,19 +141,34 @@ CHOICE=$(dialog --clear \
 
 clear
 case $CHOICE in
-"1") sudo service wart-node start ;;
-"2") sudo service wart-node stop ;;
+"1")
+  # if zero
+  if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
+    sudo service wart-node start
+  else
+    echo "Already running!"
+    sleep 1
+  fi
+  ;;
+"2")
+  # if any data
+  if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
+    sudo service wart-node stop
+  else
+    echo "Nothing to stop!"
+    sleep 1
+  fi
+  ;;
 "3")
   # start counting (seconds)
   START="$SECONDS"
-  # change directory, ninja
+  # change directory, ninja, -jall_threads-1 buffer thread
   cd || exit && cd Warthog && git pull && cd build || exit && ninja -j"$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
   TIMER=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
-  echo
-  read -r -p "$TIMER - Press Enter to continue" </dev/tty
+  read -r -p "Duration: $TIMER - Press Enter to continue" </dev/tty
   ;;
 esac
 
