@@ -90,12 +90,12 @@ print_help() {
 }
 
 # menu #########################################################################
-HEIGHT="14"
+HEIGHT="15"
 WIDTH="28"
 CHOICE_HEIGHT="14"
 BACKTITLE="Warthog Wallet"
 TITLE="Wart-Wallet"
-MENU=""
+MENU="Load: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
 
 OPTIONS=(
   1 "Wallet balance"
