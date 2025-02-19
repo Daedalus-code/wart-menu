@@ -4,23 +4,6 @@
 
 source /etc/wart-menu/wart.config
 
-################################################################################
-
-# function to display the main dialog menu
-main_menu() {
-  dialog --clear --title "Wart-wallet" \
-    --menu "" 15 28 16 \
-    1 "Wallet balance" \
-    2 "Wallet address" \
-    3 "Send transaction" \
-    4 "Wallet files" \
-    5 "Create wallet" \
-    6 "Restore wallet" \
-    7 "Print version" \
-    8 "Help" \
-    2>&1 >/dev/tty
-}
-
 # function for wallet command ##################################################
 wallet_command() {
   "$WARTHOG_DIR"/wallet/./wart-wallet --file="$WALLET_JSON" "$CMD"
@@ -131,21 +114,43 @@ print_help() {
   display_function
 }
 
-# main loop ####################################################################
-while true; do
-  CHOICE=$(main_menu)
+# menu #########################################################################
+HEIGHT="15"
+WIDTH="28"
+CHOICE_HEIGHT="16"
+BACKTITLE="Backtitle here"
+TITLE="Title here"
+MENU="Choose one of the following options:"
 
-  case $CHOICE in
-  "1") print_balance ;;  # print wallet balance
-  "2") print_address ;;  # print wallet address
-  "3") send_tx ;;        # send transaction
-  "4") wallet_file ;;    # wallet files
-  "5") create_wallet ;;  # create new wallet
-  "6") restore_wallet ;; # restore old wallet
-  "7") print_version ;;  # print wallet version
-  "8") print_help ;;     # print help commands
-  "*") break ;;
-  esac
-done
+OPTIONS=(
+  1 "Wallet balance"
+  2 "Wallet address"
+  3 "Send transaction"
+  4 "Wallet files"
+  5 "Create wallet"
+  6 "Restore wallet"
+  7 "Print version"
+  8 "Help")
+
+CHOICE=$(dialog --clear \
+  --backtitle "$BACKTITLE" \
+  --title "$TITLE" \
+  --menu "$MENU" \
+  $HEIGHT $WIDTH $CHOICE_HEIGHT \
+  "${OPTIONS[@]}" \
+  2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+"1") print_balance ;;  # print wallet balance
+"2") print_address ;;  # print wallet address
+"3") send_tx ;;        # send transaction
+"4") wallet_file ;;    # wallet files
+"5") create_wallet ;;  # create new wallet
+"6") restore_wallet ;; # restore old wallet
+"7") print_version ;;  # print wallet version
+"8") print_help ;;     # print help commands
+"*") break ;;
+esac
 
 # END
