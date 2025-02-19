@@ -57,9 +57,9 @@ if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
   echo "$(cd "$WARTHOG_DIR"/node && ./wart-node --version | awk '{ print $2 }' | tr -d 'v')" >/tmp/rnwr.tmp
 fi
 
-# running and latest release
+# installed and latest release
 LATEST_RELEASE=$(cat /tmp/ltrwr.tmp 2>/dev/null)
-RUNNING_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
+INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
 
 ################################################################################
 
@@ -67,7 +67,7 @@ HEIGHT="10"
 WIDTH="42"
 CHOICE_HEIGHT="4"
 TITLE="Wart-Node"
-MENU="Running: $RUNNING_RELEASE Latest: $LATEST_RELEASE"
+MENU="Installed: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE"
 
 OPTIONS=(
   1 "Start            Run Wart-node"
