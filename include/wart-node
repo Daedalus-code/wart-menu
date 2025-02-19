@@ -48,13 +48,35 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   ./wart-node
 fi
 
+################################################################################
+
 # latest release owner and repo
 OWNER="warthog-network"
 REPO="Warthog"
+
+# file age (seconds)
+PIDOF_WART_NODE_AGE="$(stat -c '%Y' "${LOG_DIR:?}"/leeloo/buy_limit 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+LATEST_RELEASE_AGE="$(stat -c '%Y' "${LOG_DIR:?}"/leeloo/buy_limit 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+INSTALLED_RELEASE_AGE="$(stat -c '%Y' "${LOG_DIR:?}"/leeloo/buy_limit 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+
+# if old enough
+if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
+  # remove old files
+  rm /tmp/pdown.tmp &>/dev/null
+fi
+
+# if old enough
+if [[ "$LATEST_RELEASE_AGE" -gt "3600" || "$INSTALLED_RELEASE_AGE" -gt "3600" ]] &>/dev/null; then
+  # remove old files
+  rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
+fi
+
 # if missing, fetch the latest release tag from gitHub api, fetch wart-node version
-if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp || ! -f /tmp/pdown.tmp ]] &>/dev/null; then
+if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
   echo "$(curl -s "https://api.github.com/repos/$OWNER/$REPO/releases/latest" | jq -r .tag_name)" >/tmp/ltrwr.tmp
   echo "$(cd "$WARTHOG_DIR"/node && ./wart-node --version | awk '{ print $2 }' | tr -d 'v')" >/tmp/rnwr.tmp
+fi
+if [[ ! -f /tmp/pdown.tmp ]] &>/dev/null; then
   echo "$(pidof wart-node)" >/tmp/pdown.tmp
 fi
 
@@ -72,12 +94,34 @@ fi
 
 ################################################################################
 
+# process name (replace with the actual process name)
+PROCESS_NAME="wart-node"
+
+if [ -z "$PID" ]; then
+  echo "Process $PROCESS_NAME is not running."
+  exit 1
+fi
+
+# get process start time from /proc/[PID]/stat (22nd field)
+START_TIME=$(awk '{print $22}' /proc/$PIDOF_WART_NODE/stat)
+# get system uptime in clock ticks
+UPTIME_TICKS=$(getconf CLK_TCK)
+# convert start time to seconds
+START_TIME_SECONDS=$((START_TIME / UPTIME_TICKS))
+# get total system uptime in seconds
+SYSTEM_UPTIME=$(awk '{print $1}' /proc/uptime | cut -d. -f1)
+# calculate process uptime
+PROCESS_UPTIME=$((SYSTEM_UPTIME - START_TIME_SECONDS))
+
+################################################################################
+
 HEIGHT="11"
 WIDTH="42"
 CHOICE_HEIGHT="4"
 TITLE="Wart-Node"
 MENU="Installed: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE
-Status: $NODE_STATUS (PID: $PIDOF_WART_NODE)"
+Process $PROCESS_NAME (PID: $PIDOF_WART_NODE) $(date -u -d @$PROCESS_UPTIME +%H:%M:%S)
+Status: $NODE_STATUS"
 
 OPTIONS=(
   1 "Start            Run wart-node"
