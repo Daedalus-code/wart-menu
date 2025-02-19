@@ -129,7 +129,7 @@ WIDTH="42"
 
 OPTIONS=(
   1 "Start            Run wart-node"
-  2 "Stop             Stop node"
+  2 "Stop             Kill wart-node"
   3 "Update           Update node")
 
 CHOICE=$(dialog --clear \
