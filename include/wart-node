@@ -86,7 +86,7 @@ LATEST_RELEASE=$(cat /tmp/ltrwr.tmp 2>/dev/null)
 INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
 
 # does not copy
-if [[ ! "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
+if [[ "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
   NEW_RELEASE="!"
 else
   NEW_RELEASE=""
