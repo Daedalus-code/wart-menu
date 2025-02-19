@@ -19,7 +19,7 @@ main_menu() {
     6 "Restore wallet" \
     7 "Print version" \
     8 "Help" \
-    0 "Exit" \
+    0 "Return" \
     2>&1 >/dev/tty
 }
 
