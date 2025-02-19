@@ -48,16 +48,29 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   ./wart-node
 fi
 
+# latest release owner and repo
+OWNER="warthog-network"
+REPO="Warthog"
+# if missing, fetch the latest release tag from gitHub api, fetch wart-node version
+if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
+  echo "$(curl -s "https://api.github.com/repos/$OWNER/$REPO/releases/latest" | jq -r .tag_name)" >/tmp/ltrwr.tmp
+  echo "$(cd "$WARTHOG_DIR"/build/src/node && ./wart-node --version | awk '{ print $2 }' | tr -d 'v')" >/tmp/rnwr.tmp
+fi
+
+# running and latest release
+LATEST_RELEASE=$(cat /tmp/ltrwr.tmp 2>/dev/null)
+RUNNING_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
+
 ################################################################################
 
 HEIGHT="10"
 WIDTH="42"
 CHOICE_HEIGHT="4"
 TITLE="Wart-Node"
-MENU="Wart Node Options"
+MENU="Running: $RUNNING_RELEASE Latest: $LATEST_RELEASE"
 
 OPTIONS=(
-  1 "Start            Run wart-node"
+  1 "Start            Run Wart-node"
   2 "Stop             Stop node"
   3 "Update           Update node")
 
