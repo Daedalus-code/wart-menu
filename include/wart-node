@@ -114,6 +114,8 @@ UPTIME_TICKS=$(getconf CLK_TCK)
 START_TIME_SECONDS=$((START_TIME / UPTIME_TICKS))
 # get total system uptime in seconds
 SYSTEM_UPTIME=$(awk '{print $1}' /proc/uptime | cut -d. -f1)
+# calculate into days
+SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/3600" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
 UPTIME_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))
 
@@ -122,7 +124,7 @@ UPTIME_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/
 TITLE="Wart-Node"
 MENU="Node...: v$INSTALLED_RELEASE Latest: v$LATEST_RELEASE $NEW_RELEASE
 Status.: $NODE_STATUS PID: $PIDOF_WART_NODE
-Uptime.: $UPTIME_FORMATTED
+Uptime.: $UPTIME_FORMATTED $SYSTEM_UPTIME_DAYS Days
 Load...: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
 CHOICE_HEIGHT="4"
 HEIGHT="13"
