@@ -59,19 +59,6 @@ restore_wallet() {
   sleep 1
 }
 
-# function to display the version ##############################################
-print_version() {
-  # version
-  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" --version)"
-  # display function
-  display_result() {
-    dialog --title "$BACKTITLE" \
-      --no-collapse \
-      --msgbox "$RESULT" 5 "$(echo "13+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
-  }
-  display_result
-}
-
 # function to display help #####################################################
 print_help() {
   # help
@@ -80,13 +67,13 @@ print_help() {
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "$RESULT" 5 "$(echo "13+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
+      --msgbox "$RESULT" 0 0
   }
   display_result
 }
 
 # menu #########################################################################
-HEIGHT="15"
+HEIGHT="14"
 WIDTH="28"
 CHOICE_HEIGHT="14"
 BACKTITLE="Warthog Wallet"
@@ -100,8 +87,7 @@ OPTIONS=(
   4 "Wallet files"
   5 "Create wallet"
   6 "Restore wallet"
-  7 "Print version"
-  8 "Help")
+  7 "Help")
 
 CHOICE=$(dialog --clear \
   --backtitle "$BACKTITLE" \
@@ -119,8 +105,7 @@ case $CHOICE in
 "4") wallet_file ;;    # wallet files
 "5") create_wallet ;;  # create new wallet
 "6") restore_wallet ;; # restore old wallet
-"7") print_version ;;  # print wallet version
-"8") print_help ;;     # print help commands
+"7") print_help ;;     # print help commands
 "*") break ;;
 esac
 
