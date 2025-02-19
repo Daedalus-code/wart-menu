@@ -28,7 +28,7 @@ wireless_menu() {
   done <<<"$WIFI_LIST"
   # show menu with available wi-fi networks
   WIDTH="$(echo "$(echo "$MENU_ITEMS" | wc -L)+49" | bc 2>/dev/null)"
-  LENGTH="$(echo "$(echo "$MENU_ITEMS" | wc -l)+7" | bc 2>/dev/null)"
+  LENGTH="$(echo "$(echo "$MENU_ITEMS" | wc -l)+6" | bc 2>/dev/null)"
   SELECTED_NETWORK=$(dialog --title "Wi-Fi Networks Found" \
     --menu "" "$LENGTH" "$WIDTH" 15 \
     "${MENU_ITEMS[@]}" 2>&1 >/dev/tty)

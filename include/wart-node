@@ -31,8 +31,8 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 Description=Warthog Node
 
 [Service]
-WorkingDirectory=/home/wart/Warthog/build/src/node
-ExecStart=/home/wart/Warthog/build/src/node/wart-node --chain-db=/home/$USER/.warthog/chain.db3 --peers-db=/home/$USER/.warthog/peers.db3
+WorkingDirectory=$WARTHOG_DIR/node
+ExecStart=$WARTHOG_DIR/node/wart-node --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS
 Restart=always
 
 [Install]
@@ -127,13 +127,14 @@ Status.: $NODE_STATUS PID: $PIDOF_WART_NODE
 Uptime.: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
 Load...: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
 CHOICE_HEIGHT="4"
-HEIGHT="13"
+HEIGHT="14"
 WIDTH="42"
 
 OPTIONS=(
   1 "Start            Run wart-node"
   2 "Stop             Kill wart-node"
-  3 "Update           Update node")
+  3 "Update           Update node"
+  4 "Help")
 
 CHOICE=$(dialog --clear \
   --title "$TITLE" \
@@ -179,6 +180,7 @@ case $CHOICE in
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
   read -r -p "Duration: $TIMER_FORMATTED - Press Enter to continue" </dev/tty
   ;;
+"4") ;;
 esac
 
 # END

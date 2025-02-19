@@ -4,31 +4,15 @@
 
 source /etc/wart-menu/wart.config
 
-# function for wallet command ##################################################
-wallet_command() {
-  "$WARTHOG_DIR"/wallet/./wart-wallet --file="$WALLET_JSON" "$CMD"
-}
-
-# function for dialog display ##################################################
-display_function() {
-  # display function
-  display_result() {
-    dialog --title "$BACKTITLE" \
-      --no-collapse \
-      --msgbox "$(wallet_command)" "$(echo "4+$(wallet_command | wc -l)" | bc 2>/dev/null)" "$(echo "5+$(wallet_command | wc -L)" | bc 2>/dev/null)"
-  }
-  display_result
-}
-
 # function to print wallet balance #############################################
 print_balance() {
   # balance
-  CMD="-b"
+  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -b)"
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "Balance: $(wallet_command) WART" 5 "$(echo "18+$(wallet_command | wc -L)" | bc 2>/dev/null)"
+      --msgbox "Balance: $(echo "$RESULT") WART" 5 "$(echo "18+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
   }
   display_result
 }
@@ -36,12 +20,12 @@ print_balance() {
 # function to print wallet address #############################################
 print_address() {
   # address
-  CMD="-a"
+  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -a)"
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "Address: $(wallet_command)" 5 "$(echo "13+$(wallet_command | wc -L)" | bc 2>/dev/null)"
+      --msgbox "Address: $RESULT" 5 "$(echo "13+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
   }
   display_result
 }
@@ -78,15 +62,27 @@ restore_wallet() {
 # function to display the version ##############################################
 print_version() {
   # version
-  CMD="--version"
-  display_function
+  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" --version)"
+  # display function
+  display_result() {
+    dialog --title "$BACKTITLE" \
+      --no-collapse \
+      --msgbox "$RESULT" 5 "$(echo "13+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
+  }
+  display_result
 }
 
 # function to display help #####################################################
 print_help() {
   # help
-  CMD="--help"
-  display_function
+  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" --help)"
+  # display function
+  display_result() {
+    dialog --title "$BACKTITLE" \
+      --no-collapse \
+      --msgbox "$RESULT" 5 "$(echo "13+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
+  }
+  display_result
 }
 
 # menu #########################################################################
