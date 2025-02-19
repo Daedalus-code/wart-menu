@@ -55,9 +55,9 @@ OWNER="warthog-network"
 REPO="Warthog"
 
 # file age (seconds)
-PIDOF_WART_NODE_AGE="$(stat -c '%Y' "${LOG_DIR:?}"/leeloo/buy_limit 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
-LATEST_RELEASE_AGE="$(stat -c '%Y' "${LOG_DIR:?}"/leeloo/buy_limit 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
-INSTALLED_RELEASE_AGE="$(stat -c '%Y' "${LOG_DIR:?}"/leeloo/buy_limit 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+PIDOF_WART_NODE_AGE="$(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+LATEST_RELEASE_AGE="$(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+INSTALLED_RELEASE_AGE="$(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 
 # if old enough
 if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
