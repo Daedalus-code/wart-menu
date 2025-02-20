@@ -56,7 +56,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   ##############################################################################
 
   # ninja -j"minus one thread"
-  ninja -j"$(echo "$(cat /proc/cpuinfo | grep -c "processor")-1" | bc 2>/dev/null)"
+  ninja -j"$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
   # if missing
   if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
     # service data
@@ -126,7 +126,7 @@ fi
 
 # installed and latest release
 PIDOF_WART_NODE="$(cat /tmp/pdown.tmp 2>/dev/null)"
-LATEST_RELEASE=$(cat /tmp/ltrwr.tmp 2>/dev/null)
+LATEST_RELEASE="$(cat /tmp/ltrwr.tmp 2>/dev/null)"
 INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
 
 # does not copy
@@ -148,18 +148,20 @@ fi
 
 ################################################################################
 
+# system load
+SYSTEM_LOAD="$(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
 # get process start time from /proc/[PID]/stat (22nd field)
-START_TIME=$(awk '{print $22}' /proc/$PIDOF_WART_NODE/stat)
+START_TIME="$(awk '{print $22}' /proc/$PIDOF_WART_NODE/stat)"
 # get system uptime in clock ticks
-UPTIME_TICKS=$(getconf CLK_TCK)
+UPTIME_TICKS="$(getconf CLK_TCK)"
 # convert start time to seconds
-START_TIME_SECONDS=$((START_TIME / UPTIME_TICKS))
+START_TIME_SECONDS="$((START_TIME / UPTIME_TICKS))"
 # get total system uptime in seconds
-SYSTEM_UPTIME=$(awk '{print $1}' /proc/uptime | cut -d. -f1)
+SYSTEM_UPTIME="$(awk '{print $1}' /proc/uptime | cut -d. -f1)"
 # calculate into days
 SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
-UPTIME_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))
+UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
 
 # if CPU temp exist
 if [[ "$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | wc -l)" -gt "0" ]] &>/dev/null; then
@@ -177,7 +179,7 @@ TITLE="Wart-Node"
 MENU="Version.: v$INSTALLED_RELEASE $NEW_RELEASE
 Status..: $NODE_STATUS PID: $PIDOF_WART_NODE
 Uptime..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
-Load....: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null) $CPU_TEMP"
+Load....: $SYSTEM_LOAD $CPU_TEMP"
 CHOICE_HEIGHT="4"
 HEIGHT="15"
 WIDTH="45"
