@@ -180,12 +180,12 @@ Uptime..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
 Load....: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null) $CPU_TEMP"
 CHOICE_HEIGHT="4"
 HEIGHT="15"
-WIDTH="42"
+WIDTH="45"
 
 OPTIONS=(
   1 "Start            Run wart-node"
   2 "Stop             Kill wart-node"
-  3 "Update           Update node"
+  3 "Update           Update wart-node"
   4 "Data             Data usage"
   5 "Help")
 
