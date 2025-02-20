@@ -25,9 +25,10 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   ##############################################################################
 
-  # if memory are less than 2GB
+  # if total memory are less than 2GB
   SYSTEM_MEMORY="$(echo "$(cat /proc/meminfo 2>/dev/null | grep "MemTotal" | awk '{ print $2 }')/1024" | bc 2>/dev/null)"
-  if [[ "$SYSTEM_MEMORY" -lt "2000" ]] &>/dev/null; then
+  SYSTEM_SWAP="$(echo "$(cat /proc/meminfo 2>/dev/null | grep "SwapTotal" | awk '{ print $2 }')/1024" | bc 2>/dev/null)"
+  if [[ "$(echo "$SYSTEM_MEMORY+$SYSTEM_SWAP" | bc 2>/dev/null)" -lt "2000" ]] &>/dev/null; then
     if dialog --stdout --title "Memory: ${SYSTEM_MEMORY}MB" \
       --backtitle "Need more memory!" \
       --yesno "Create 2GB swapfile?" 5 28; then
