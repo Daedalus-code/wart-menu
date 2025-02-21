@@ -200,7 +200,7 @@ CACHED=$(grep ^Cached /proc/meminfo | awk '{print $2}')
 USED_MEM=$((TOTAL_MEM - FREE_MEM - BUFFERS - CACHED))
 # convert to MB
 TOTAL_MEM_MB=$((TOTAL_MEM / 1024))
-USED_MEM_MB=$((used_mem / 1024))
+USED_MEM_MB=$((USED_MEM / 1024))
 FREE_MEM_MB=$((FREE_MEM / 1024))
 
 ################################################################################
@@ -210,7 +210,7 @@ MENU="Version.: v$INSTALLED_RELEASE $NEW_RELEASE
 Status..: $NODE_STATUS PID: $PIDOF_WART_NODE
 Uptime..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
 Load....: $SYSTEM_LOAD $CPU_TEMP
-Memory..: Used: ${USED_MEM_MB}MB Free: ${FREE_MEM_MB}MB"
+Memory..: Free Mem ${FREE_MEM_MB:?}MB/${TOTAL_MEM_MB:?}MB"
 CHOICE_HEIGHT="4"
 HEIGHT="16"
 WIDTH="45"
