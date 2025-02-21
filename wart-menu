@@ -150,11 +150,18 @@ network_tools() {
 
 # function to display information ##############################################
 print_info() {
+  # if missing
+  if [[ ! -f /tmp/mdl.tmp ]] &>/dev/null; then
+    echo "$(cat /proc/cpuinfo 2>/dev/null | grep "Model" | awk -F: '{ print $2 }' | xargs)" >/tmp/mdl.tmp
+  fi
+  # model
+  CPU_MODEL="$(cat /tmp/mdl.tmp 2>/dev/null)"
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "[$(date)] - [INFO] Wart-Menu v$MENU_VERSION" 5 65
+      --msgbox "[INFO] Wart-Menu v$MENU_VERSION
+Model: $CPU_MODEL" 5 45
   }
   display_result
 }

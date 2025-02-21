@@ -210,16 +210,19 @@ USED_SWAP=$((TOTAL_SWAP - FREE_SWAP))
 TOTAL_SWAP_MB=$((TOTAL_SWAP / 1024))
 USED_SWAP_MB=$((USED_SWAP / 1024))
 FREE_SWAP_MB=$((FREE_SWAP / 1024))
+# percentage
+USED_MEM_PERCENTAGE="$(echo "100/$TOTAL_MEM_MB*$USED_MEM_MB" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
+USED_SWAP_PERCENTAGE="$(echo "100/$TOTAL_SWAP_MB*$USED_SWAP_MB" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
 
 ################################################################################
 
-TITLE="Wart-Node"
-MENU="Version.: v$INSTALLED_RELEASE $NEW_RELEASE
-Status..: $NODE_STATUS PID: $PIDOF_WART_NODE
-Uptime..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
-Load....: $SYSTEM_LOAD $CPU_TEMP
-Memory..: ${USED_MEM_MB:?}MB/${TOTAL_MEM_MB:?}MB
-SWAP....: ${USED_SWAP_MB:?}MB/${TOTAL_SWAP_MB:?}MB"
+TITLE="Wart-Node - [v${INSTALLED_RELEASE}]"
+MENU="Load...: $SYSTEM_LOAD $CPU_TEMP
+Uptime.: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
+Memory.: ${USED_MEM_MB:?} MB / ${TOTAL_MEM_MB:?} MB ${USED_MEM_PERCENTAGE}%
+SWAP...: ${USED_SWAP_MB:?} MB / ${TOTAL_SWAP_MB:?} MB ${USED_SWAP_PERCENTAGE}%
+Node...: v$INSTALLED_RELEASE $NEW_RELEASE
+Status.: $NODE_STATUS PID: $PIDOF_WART_NODE"
 CHOICE_HEIGHT="4"
 HEIGHT="17"
 WIDTH="45"
