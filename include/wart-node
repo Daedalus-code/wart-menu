@@ -216,7 +216,7 @@ USED_SWAP_PERCENTAGE="$(echo "100/$TOTAL_SWAP_MB*$USED_SWAP_MB" | bc -l 2>/dev/n
 
 ################################################################################
 
-TITLE="Wart-Node - [v${INSTALLED_RELEASE}]"
+TITLE="Wart-Node Menu"
 MENU="Load...: $SYSTEM_LOAD $CPU_TEMP
 Uptime.: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
 Memory.: ${USED_MEM_MB:?} MB / ${TOTAL_MEM_MB:?} MB ${USED_MEM_PERCENTAGE}%
