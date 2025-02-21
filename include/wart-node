@@ -198,10 +198,18 @@ FREE_MEM=$(grep MemFree /proc/meminfo | awk '{print $2}')
 BUFFERS=$(grep Buffers /proc/meminfo | awk '{print $2}')
 CACHED=$(grep ^Cached /proc/meminfo | awk '{print $2}')
 USED_MEM=$((TOTAL_MEM - FREE_MEM - BUFFERS - CACHED))
-# convert to MB
+# convert memory to MB
 TOTAL_MEM_MB=$((TOTAL_MEM / 1024))
 USED_MEM_MB=$((USED_MEM / 1024))
 FREE_MEM_MB=$((FREE_MEM / 1024))
+# swap memory info from /proc/meminfo
+TOTAL_SWAP=$(grep SwapTotal /proc/meminfo | awk '{print $2}')
+FREE_SWAP=$(grep SwapFree /proc/meminfo | awk '{print $2}')
+USED_SWAP=$((TOTAL_SWAP - FREE_SWAP))
+# convert swap to MB
+TOTAL_SWAP_MB=$((TOTAL_SWAP / 1024))
+USED_SWAP_MB=$((USED_SWAP / 1024))
+FREE_SWAP_MB=$((FREE_SWAP / 1024))
 
 ################################################################################
 
@@ -210,9 +218,10 @@ MENU="Version.: v$INSTALLED_RELEASE $NEW_RELEASE
 Status..: $NODE_STATUS PID: $PIDOF_WART_NODE
 Uptime..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
 Load....: $SYSTEM_LOAD $CPU_TEMP
-Memory..: Free Mem ${FREE_MEM_MB:?}MB/${TOTAL_MEM_MB:?}MB"
+Memory..: Free: ${FREE_MEM_MB:?}MB/${TOTAL_MEM_MB:?}MB
+SWAP....: Free: ${FREE_SWAP_MB:?}MB/${TOTAL_SWAP_MB:?}MB"
 CHOICE_HEIGHT="4"
-HEIGHT="16"
+HEIGHT="17"
 WIDTH="45"
 
 OPTIONS=(
