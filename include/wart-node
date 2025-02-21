@@ -55,10 +55,25 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   ##############################################################################
 
+  # start counting (seconds)
+  START="$SECONDS"
+  # ninja -j threads
+  NINJA_THREADS="$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
   # ninja -j"minus one thread"
-  ninja -j"$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
+  ninja -j"$NINJA_THREADS"
+  # seconds since start
+  DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
+  # convert seconds
+  TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
+  read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
+Press Enter to continue" </dev/tty
+
+  ##############################################################################
+
   # if missing
   if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
+    echo "Creating wart-node.service.."
+    sleep 1
     # service data
     echo "[Unit]
 Description=Warthog Node
@@ -163,6 +178,8 @@ SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
 UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
 
+################################################################################
+
 # if CPU temp exist
 if [[ "$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | wc -l)" -gt "0" ]] &>/dev/null; then
   # calculate cpu temp
@@ -175,13 +192,27 @@ fi
 
 ################################################################################
 
+# memory info from /proc/meminfo
+TOTAL_MEM=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+FREE_MEM=$(grep MemFree /proc/meminfo | awk '{print $2}')
+BUFFERS=$(grep Buffers /proc/meminfo | awk '{print $2}')
+CACHED=$(grep ^Cached /proc/meminfo | awk '{print $2}')
+USED_MEM=$((TOTAL_MEM - FREE_MEM - BUFFERS - CACHED))
+# convert to MB
+TOTAL_MEM_MB=$((TOTAL_MEM / 1024))
+USED_MEM_MB=$((used_mem / 1024))
+FREE_MEM_MB=$((FREE_MEM / 1024))
+
+################################################################################
+
 TITLE="Wart-Node"
 MENU="Version.: v$INSTALLED_RELEASE $NEW_RELEASE
 Status..: $NODE_STATUS PID: $PIDOF_WART_NODE
 Uptime..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
-Load....: $SYSTEM_LOAD $CPU_TEMP"
+Load....: $SYSTEM_LOAD $CPU_TEMP
+Memory..: Used: ${USED_MEM_MB}MB Free: $FREE_MEM_MB"
 CHOICE_HEIGHT="4"
-HEIGHT="15"
+HEIGHT="16"
 WIDTH="45"
 
 OPTIONS=(
@@ -227,13 +258,16 @@ case $CHOICE in
   fi
   # start counting (seconds)
   START="$SECONDS"
+  # ninja -j threads
+  NINJA_THREADS="$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
   # change directory, ninja, -jall_threads-1 buffer thread
-  cd || exit && cd Warthog && git pull && cd build || exit && ninja -j"$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
+  cd || exit && cd Warthog && git pull && cd build || exit && ninja -j"$NINJA_THREADS"
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
-  read -r -p "Duration: $TIMER_FORMATTED - Press Enter to continue" </dev/tty
+  read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
+Press Enter to continue" </dev/tty
   ;;
 "4") data_usage ;;
 "5") print_help ;;
