@@ -7,9 +7,9 @@ source /etc/wart-menu/wart.config
 # function to print wallet balance #############################################
 print_balance() {
   # balance
-  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -b)"
-  # if api failed
-  if [[ "$(echo "$RESULT" | grep "failed")" -gt "0" ]] &>/dev/null; then
+  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -b 2>/dev/null)"
+  # if zero
+  if [[ -z "$RESULT" ]] &>/dev/null; then
     RESULT="Please wait for the node!"
   fi
   # display function
@@ -24,9 +24,9 @@ print_balance() {
 # function to print wallet address #############################################
 print_address() {
   # address
-  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -a)"
-  # if api failed
-  if [[ "$(echo "$RESULT" | grep "failed")" -gt "0" ]] &>/dev/null; then
+  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -a 2>/dev/null)"
+  # if zero
+  if [[ -z "$RESULT" ]] &>/dev/null; then
     RESULT="Please wait for the node!"
   fi
   # display function
