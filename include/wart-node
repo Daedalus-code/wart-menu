@@ -193,7 +193,7 @@ SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
 UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
 # service uptime
-NODE_UPTIME="$(ps -p "$(pidof -s wart-node 2>/dev/null)" -o etime= 2>/dev/null)"
+NODE_UPTIME="$(ps -p "$PIDOF_WART_NODE" -o etime= 2>/dev/null)"
 
 ################################################################################
 
