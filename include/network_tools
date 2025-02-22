@@ -86,17 +86,37 @@ wireless_menu() {
   esac
 }
 
+# ifconfig #####################################################################
+
+# display function
+ifconfig_result() {
+  dialog --title "Interface network" \
+    --no-collapse \
+    --msgbox "$(ifconfig 2>/dev/null)"
+}
+
+# iwconfig #####################################################################
+
+# display function
+iwconfig_result() {
+  dialog --title "Wireless network" \
+    --no-collapse \
+    --msgbox "$(iwconfig 2>/dev/null)"
+}
+
 # menu #########################################################################
-HEIGHT="8"
+HEIGHT="10"
 WIDTH="42"
-CHOICE_HEIGHT="2"
+CHOICE_HEIGHT="4"
 BACKTITLE="Network-Tools"
 TITLE="Network options"
 MENU=""
 
 OPTIONS=(
   1 "Network          Configuration"
-  2 "Wireless         Wi-Fi Network")
+  2 "Wireless         Wi-Fi Network"
+  3 "Network          ifconfig"
+  4 "Wireless         iwconfig")
 
 CHOICE=$(dialog --clear \
   --backtitle "$BACKTITLE" \
@@ -110,6 +130,8 @@ clear
 case $CHOICE in
 "1") sudo nano /etc/netplan/* ;; # ethernet
 "2") wireless_menu ;;            # wireless
+"3") ifconfig_result ;;          # interface
+"4") iwconfig_result ;;          # wireless
 "0") exit ;;                     # exit
 "*") break ;;                    # break
 esac
