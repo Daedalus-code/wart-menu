@@ -7,8 +7,8 @@ source /etc/wart-menu/include/data_usage
 
 ################################################################################
 
-# check for changes
-if [[ "$(grep -c "$WARTHOG_API" /etc/systemd/system/wart-node.service)" -eq "0" ]] &>/dev/null; then
+# check for changes for service that are ruled by configuration
+if [[ "$(grep -c "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_API" /etc/systemd/system/wart-node.service)" -eq "0" ]] &>/dev/null; then
   # remove old file
   sudo rm /etc/systemd/system/wart-node.service &>/dev/null
 fi
@@ -232,16 +232,17 @@ Memory.: ${USED_MEM_MB:?} MB / ${TOTAL_MEM_MB:?} MB ${USED_MEM_PERCENTAGE}%
 SWAP...: ${USED_SWAP_MB:?} MB / ${TOTAL_SWAP_MB:?} MB ${USED_SWAP_PERCENTAGE}%
 Node...: v$INSTALLED_RELEASE $NEW_RELEASE
 Status.: $NODE_STATUS PID: $PIDOF_WART_NODE"
-CHOICE_HEIGHT="4"
-HEIGHT="17"
-WIDTH="45"
+CHOICE_HEIGHT="6"
+HEIGHT="18"
+WIDTH="46"
 
 OPTIONS=(
   1 "Start            Run wart-node"
   2 "Stop             Kill wart-node"
-  3 "Update           Update wart-node"
-  4 "Data             Data usage"
-  5 "Help")
+  3 "Config           wart-node.service"
+  4 "Update           Update wart-node"
+  5 "Data             Data usage"
+  6 "Help")
 
 CHOICE=$(dialog --clear \
   --title "$TITLE" \
@@ -271,7 +272,8 @@ case $CHOICE in
     sleep 1
   fi
   ;;
-"3")
+"3") sudo nano /etc/systemd/system/wart-node.service ;;
+"4")
   # if any data
   if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
     # stop wart-node
@@ -290,8 +292,8 @@ case $CHOICE in
   read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
 Press Enter to continue" </dev/tty
   ;;
-"4") data_usage ;;
-"5") print_help ;;
+"5") data_usage ;;
+"6") print_help ;;
 esac
 
 # END
