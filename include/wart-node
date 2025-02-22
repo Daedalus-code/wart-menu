@@ -35,6 +35,14 @@ remove_pid_temp() {
 PIDOF_WART_NODE_AGE="$(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 LATEST_RELEASE_AGE="$(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 INSTALLED_RELEASE_AGE="$(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+WALLET_PEERS="$(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+
+# of missing, if old enough
+if [[ ! -f /tmp/wprs.tmp || "$WALLET_PEERS" -gt "60" ]] &>/dev/null; then
+  echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
+fi
+# wallet peers
+WALLET_PEERS="$(cat /tmp/wprs.tmp 2>/dev/null)"
 
 # if old enough
 if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
@@ -131,11 +139,6 @@ FREE_SWAP_MB=$((FREE_SWAP / 1024))
 # percentage
 USED_MEM_PERCENTAGE="$(echo "100/$TOTAL_MEM_MB*$USED_MEM_MB" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
 USED_SWAP_PERCENTAGE="$(echo "100/$TOTAL_SWAP_MB*$USED_SWAP_MB" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
-
-################################################################################
-
-# api calls
-WALLET_PEERS="$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null)"
 
 ################################################################################
 
