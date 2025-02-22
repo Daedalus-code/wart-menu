@@ -8,13 +8,16 @@ source /etc/wart-menu/wart.config
 
 # check for changes for service that are ruled by configuration
 if [[ "$(grep -c "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_API" /etc/systemd/system/wart-node.service)" -eq "0" ]] &>/dev/null; then
+  echo "Found new configuration!"
   # remove old file
   sudo rm /etc/systemd/system/wart-node.service &>/dev/null
 fi
+
+################################################################################
+
 clear
 # if missing
 if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
-  echo "Found new configuration!"
   echo "Stopping wart node.."
   # start node
   sudo service wart-node stop &>/dev/null
@@ -66,8 +69,9 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   ##############################################################################
 
   # if total memory are less than 2GB
-  SYSTEM_MEMORY="$(echo "$(cat /proc/meminfo 2>/dev/null | grep "MemTotal" | awk '{ print $2 }')/1024" | bc 2>/dev/null)"
-  SYSTEM_SWAP="$(echo "$(cat /proc/meminfo 2>/dev/null | grep "SwapTotal" | awk '{ print $2 }')/1024" | bc 2>/dev/null)"
+  SYSTEM_MEMORY="$(echo "$(grep "MemTotal" /proc/meminfo 2>/dev/null | awk '{ print $2 }')/1024" | bc 2>/dev/null)"
+  SYSTEM_SWAP="$(echo "$(grep "SwapTotal" /proc/meminfo 2>/dev/null | awk '{ print $2 }')/1024" | bc 2>/dev/null)"
+
   if [[ "$(echo "$SYSTEM_MEMORY+$SYSTEM_SWAP" | bc 2>/dev/null)" -lt "2000" ]] &>/dev/null; then
     if dialog --stdout --title "Memory: ${SYSTEM_MEMORY}MB" \
       --backtitle "Need more memory!" \
@@ -104,6 +108,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
+
   read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
 Press Enter to continue" </dev/tty
 fi
