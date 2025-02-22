@@ -55,8 +55,11 @@ fi
 install_update() {
   printf '%b' "$RESULT${GR}\n"
   cd || exit && cd wart-menu || exit
-  # copy files
-  cp wart.config /etc/wart-menu/
+  # if missing
+  if [[ ! -f /etc/wart-menu/ ]] &>/dev/null; then
+    # copy files
+    cp wart.config /etc/wart-menu/
+  fi
   cp -rfv include/ /etc/wart-menu/ | column -t
   printf '%b' "${N0}\n"
   # if usr local bin
