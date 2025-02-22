@@ -3,6 +3,7 @@
 # do not edit below ############################################################
 
 source /etc/wart-menu/wart.config
+source /etc/wart-menu/include/data_usage
 
 ################################################################################
 
@@ -105,9 +106,9 @@ iwconfig_result() {
 }
 
 # menu #########################################################################
-HEIGHT="10"
+HEIGHT="11"
 WIDTH="42"
-CHOICE_HEIGHT="4"
+CHOICE_HEIGHT="5"
 BACKTITLE="Network-Tools"
 TITLE="Network options"
 MENU=""
@@ -116,7 +117,8 @@ OPTIONS=(
   1 "Network          Configuration"
   2 "Wireless         Wi-Fi Network"
   3 "Network          ifconfig"
-  4 "Wireless         iwconfig")
+  4 "Wireless         iwconfig"
+  5 "Data             Data usage")
 
 CHOICE=$(dialog --clear \
   --backtitle "$BACKTITLE" \
@@ -132,6 +134,7 @@ case $CHOICE in
 "2") wireless_menu ;;            # wireless
 "3") ifconfig_result ;;          # interface
 "4") iwconfig_result ;;          # wireless
+"5") data_usage ;;               # data usage
 "0") exit ;;                     # exit
 "*") break ;;                    # break
 esac

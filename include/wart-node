@@ -4,7 +4,6 @@
 
 source /etc/wart-menu/wart.config
 source /etc/wart-menu/include/color
-source /etc/wart-menu/include/data_usage
 source /etc/wart-menu/include/install_node
 
 # function to display help #####################################################
@@ -166,8 +165,8 @@ Memory.: ${USED_MEM_MB:?} MB / ${TOTAL_MEM_MB:?} MB - ${USED_MEM_PERCENTAGE}%
 SWAP...: ${USED_SWAP_MB:?} MB / ${TOTAL_SWAP_MB:?} MB - ${USED_SWAP_PERCENTAGE}%
 Node...: v$INSTALLED_RELEASE $NEW_RELEASE $NODE_UPTIME
 Status.: $NODE_STATUS PID: $PIDOF_WART_NODE P2P: $WALLET_PEERS"
-CHOICE_HEIGHT="8"
-HEIGHT="20"
+CHOICE_HEIGHT="7"
+HEIGHT="19"
 WIDTH="46"
 
 OPTIONS=(
@@ -177,7 +176,6 @@ OPTIONS=(
   4 "Status           Service status"
   5 "Config           wart-node.service"
   6 "Update           Update wart-node"
-  7 "Data             Data usage"
   8 "Help")
 
 CHOICE=$(dialog --clear \
@@ -250,7 +248,6 @@ case $CHOICE in
   printf '%b' "[${G1}OK${N0}] Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP\n"
   read -r -p "[!?] Press Enter to continue" </dev/tty
   ;;
-"7") data_usage ;;
 "8") print_help ;;
 esac
 
