@@ -7,11 +7,13 @@ source /etc/wart-menu/include/color
 
 ################################################################################
 
-# check for changes for service that are ruled by configuration
-if [[ "$(grep -c "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_API" /etc/systemd/system/wart-node.service)" -eq "0" ]] &>/dev/null; then
+# check if wart-node.service needs updating
+if ! grep -q "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service ||
+  ! grep -q "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service ||
+  ! grep -q "$WARTHOG_API" /etc/systemd/system/wart-node.service; then
   printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
   # remove old file
-  sudo rm /etc/systemd/system/wart-node.service &>/dev/null
+  sudo rm -f /etc/systemd/system/wart-node.service
 fi
 
 ################################################################################
