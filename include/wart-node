@@ -44,7 +44,7 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   # remove old files
   rm /tmp/pdown.tmp &>/dev/null && rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
   # start node
-  sudo service wart-node restart
+  sudo service wart-node start
 fi
 
 ################################################################################
