@@ -156,7 +156,7 @@ print_info() {
       --no-collapse \
       --msgbox "[INFO] Wart-Menu v$MENU_VERSION
 
-$(hostnamectl)" 6 45
+$(hostnamectl)" 0 0
   }
   display_result
 }
