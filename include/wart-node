@@ -38,11 +38,9 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   echo "daemon-reload.."
   # reload
   sudo systemctl daemon-reload
-  # change directory
-  cd src/node/ || exit
-  echo "Restarting wart-node.."
   # remove old files
   rm /tmp/pdown.tmp &>/dev/null && rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
+  echo "Restarting wart-node.."
   # start node
   sudo service wart-node start
 fi
