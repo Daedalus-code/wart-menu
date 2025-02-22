@@ -11,12 +11,14 @@ print_balance() {
   # if zero
   if [[ -z "$RESULT" ]] &>/dev/null; then
     RESULT="Please wait for the node!"
+  else
+    RESULT="Balance: $RESULT WART"
   fi
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "Balance: $(echo "$RESULT") WART" 5 "$(echo "18+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
+      --msgbox "$RESULT" 5 "$(echo "18+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
   }
   display_result
 }
@@ -28,12 +30,14 @@ print_address() {
   # if zero
   if [[ -z "$RESULT" ]] &>/dev/null; then
     RESULT="Please wait for the node!"
+  else
+    RESULT="Address: $RESULT"
   fi
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "Address: $RESULT" 5 "$(echo "13+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
+      --msgbox "$RESULT" 5 "$(echo "13+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
   }
   display_result
 }
