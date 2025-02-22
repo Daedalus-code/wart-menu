@@ -10,7 +10,7 @@ source /etc/wart-menu/include/data_usage
 # check for changes
 if [[ ! "$(grep "$WARTHOG_API")" -eq "$(grep "$WARTHOG_API" /etc/systemd/system/wart-node.service)" ]] &>/dev/null; then
   # remove old file
-  rm /etc/systemd/system/wart-node.service &>/dev/null
+  sudo rm /etc/systemd/system/wart-node.service &>/dev/null
 fi
 # if missing
 if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
