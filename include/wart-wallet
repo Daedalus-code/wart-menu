@@ -8,6 +8,10 @@ source /etc/wart-menu/wart.config
 print_balance() {
   # balance
   RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -b)"
+  # if api failed
+  if [[ "$(echo "$RESULT" | grep "failed")" -gt "0" ]] &>/dev/null; then
+    RESULT="Please wait for the node!"
+  fi
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
@@ -21,6 +25,10 @@ print_balance() {
 print_address() {
   # address
   RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -a)"
+  # if api failed
+  if [[ "$(echo "$RESULT" | grep "failed")" -gt "0" ]] &>/dev/null; then
+    RESULT="Please wait for the node!"
+  fi
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
@@ -78,7 +86,7 @@ send_tx() {
 }
 
 # function for wallet files ####################################################
-wallet_file() {
+wallet_files() {
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
@@ -190,7 +198,7 @@ case $CHOICE in
 "1") print_balance ;;  # print wallet balance
 "2") print_address ;;  # print wallet address
 "3") send_tx ;;        # send transaction
-"4") wallet_file ;;    # wallet files
+"4") wallet_files ;;   # wallet files
 "5") create_wallet ;;  # create new wallet
 "6") restore_wallet ;; # restore old wallet
 "7") print_help ;;     # print help commands
