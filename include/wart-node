@@ -22,52 +22,69 @@ print_help() {
 
 ################################################################################
 
-# latest release owner and repo
-OWNER="warthog-network"
-REPO="Warthog"
-
 # remove old files
 remove_pid_temp() {
   rm /tmp/pdown.tmp &>/dev/null
 }
 
-# file age (seconds)
-PIDOF_WART_NODE_AGE="$(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
-LATEST_RELEASE_AGE="$(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
-INSTALLED_RELEASE_AGE="$(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
-WALLET_PEERS="$(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+################################################################################
 
+WALLET_PEERS="$(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 # of missing, if old enough
 if [[ ! -f /tmp/wprs.tmp || "$WALLET_PEERS" -gt "60" ]] &>/dev/null; then
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
 fi
 # wallet peers
 WALLET_PEERS="$(cat /tmp/wprs.tmp 2>/dev/null)"
+# if zero
+if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
+  WALLET_PEERS="0"
+fi
 
+################################################################################
+
+PIDOF_WART_NODE_AGE="$(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 # if old enough
 if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
   remove_pid_temp
 fi
+
+################################################################################
+
+LATEST_RELEASE_AGE="$(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+INSTALLED_RELEASE_AGE="$(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 # if old enough
 if [[ "$LATEST_RELEASE_AGE" -gt "3600" || "$INSTALLED_RELEASE_AGE" -gt "3600" ]] &>/dev/null; then
   # remove old files
   rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
 fi
-# if missing, fetch the latest release tag from gitHub api, fetch wart-node version
+
+################################################################################
+
+# latest release owner and repo
+OWNER="warthog-network"
+REPO="Warthog"
+# if missing
 if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
+  # fetch the latest release tag from gitHub api
   echo "$(curl -s "https://api.github.com/repos/$OWNER/$REPO/releases/latest" | jq -r .tag_name)" >/tmp/ltrwr.tmp
+  # fetch wart-node version
   echo "$(cd "$WARTHOG_DIR"/node && ./wart-node --version | awk '{ print $2 }' | tr -d 'v')" >/tmp/rnwr.tmp
 fi
+
+################################################################################
+
 # if missing
 if [[ ! -f /tmp/pdown.tmp ]] &>/dev/null; then
   echo "$(pidof wart-node 2>/dev/null)" >/tmp/pdown.tmp
 fi
 
+################################################################################
+
 # installed and latest release
 PIDOF_WART_NODE="$(cat /tmp/pdown.tmp 2>/dev/null)"
 LATEST_RELEASE="$(cat /tmp/ltrwr.tmp 2>/dev/null)"
 INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
-
 # does not copy
 if [[ "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
   NEW_RELEASE="-> v$LATEST_RELEASE!"
