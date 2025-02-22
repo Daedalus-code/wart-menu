@@ -2,6 +2,8 @@
 
 # do not edit below ############################################################
 
+export NCURSES_NO_UTF8_ACS=1
+
 # color scheme
 R0='\e[31m'      # Red
 BL='\e[38;5;27m' # Deep Blue (Shadow)
