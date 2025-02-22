@@ -3,12 +3,13 @@
 # do not edit below ############################################################
 
 source /etc/wart-menu/wart.config
+source /etc/wart-menu/include/color
 
 ################################################################################
 
 # check for changes for service that are ruled by configuration
 if [[ "$(grep -c "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_API" /etc/systemd/system/wart-node.service)" -eq "0" ]] &>/dev/null; then
-  echo "Found new configuration!"
+  printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
   # remove old file
   sudo rm /etc/systemd/system/wart-node.service &>/dev/null
 fi
@@ -18,11 +19,11 @@ fi
 clear
 # if missing
 if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
-  echo "Stopping wart node.."
+  printf '%b' "[${G1}OK${N0}] Stopping wart node..\n"
   # start node
   sudo service wart-node stop &>/dev/null
   # output service file
-  echo "Installing wart-node.service.."
+  printf '%b' "[${G1}OK${N0}] Installing/Updating wart-node.service..\n"
   sleep 1
   # service data
   echo "[Unit]
@@ -37,12 +38,12 @@ Restart=always
 WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   # install service
   sudo mv /tmp/wrnsrv.tmp /etc/systemd/system/wart-node.service
-  echo "daemon-reload.."
+  printf '%b' "[${G1}OK${N0}] daemon-reload..\n"
   # reload
   sudo systemctl daemon-reload
   # remove old files
   rm /tmp/pdown.tmp &>/dev/null && rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
-  echo "Restarting wart-node.."
+  printf '%b' "[${G1}OK${N0}] Restarting wart-node..\n"
   # start node
   sudo service wart-node start
 fi

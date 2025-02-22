@@ -3,6 +3,7 @@
 # do not edit below ############################################################
 
 source /etc/wart-menu/wart.config
+source /etc/wart-menu/include/color
 
 # function to print wallet balance #############################################
 print_balance() {
@@ -144,6 +145,7 @@ restore_wallet() {
 
     # if zero
     if [[ -z "$PRIVATEKEY" ]] &>/dev/null; then
+      printf '%b' "[${R1}!!${N0}] No key!\n"
       break
     fi
 

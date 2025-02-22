@@ -81,19 +81,19 @@ install_update() {
     chmod +x /hive/bin/wart-menu
   fi
   # continue
-  read -r -p "Press Enter to continue" </dev/tty
+  read -r -p "[!?] Press Enter to continue" </dev/tty
 }
 
 # if missing
 if [[ ! -d /etc/wart-menu/ ]] &>/dev/null; then
-  echo "Creating install folder.."
+  printf '%b' "[OK] Creating install folder..\n"
   # create directory
   sudo mkdir /etc/wart-menu/ &>/dev/null
   # fix ownership
   sudo chown -R "$(whoami)":"$(whoami)" /etc/wart-menu/
   sleep 1
   # install_update function
-  echo "Installing files.."
+  printf '%b' "[OK] Installing files..\n"
   install_update
 fi
 
@@ -139,7 +139,7 @@ configuration() {
 menu_update() {
   clear
   # update
-  echo "Updating wart-menu.."
+  printf '%b' "[OK] Updating wart-menu!\n"
   cd || exit && cd wart-menu && git pull
   install_update
   exit

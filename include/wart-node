@@ -3,6 +3,7 @@
 # do not edit below ############################################################
 
 source /etc/wart-menu/wart.config
+source /etc/wart-menu/include/color
 source /etc/wart-menu/include/data_usage
 source /etc/wart-menu/include/install_node
 
@@ -110,9 +111,9 @@ fi
 ################################################################################
 
 # memory info from /proc/meminfo
-TOTAL_MEM=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-FREE_MEM=$(grep MemFree /proc/meminfo | awk '{print $2}')
-BUFFERS=$(grep Buffers /proc/meminfo | awk '{print $2}')
+TOTAL_MEM=$(grep "MemTotal" /proc/meminfo | awk '{print $2}')
+FREE_MEM=$(grep "MemFree" /proc/meminfo | awk '{print $2}')
+BUFFERS=$(grep "Buffers" /proc/meminfo | awk '{print $2}')
 CACHED=$(grep ^Cached /proc/meminfo | awk '{print $2}')
 USED_MEM=$((TOTAL_MEM - FREE_MEM - BUFFERS - CACHED))
 # convert memory to MB
@@ -120,8 +121,8 @@ TOTAL_MEM_MB=$((TOTAL_MEM / 1024))
 USED_MEM_MB=$((USED_MEM / 1024))
 FREE_MEM_MB=$((FREE_MEM / 1024))
 # swap memory info from /proc/meminfo
-TOTAL_SWAP=$(grep SwapTotal /proc/meminfo | awk '{print $2}')
-FREE_SWAP=$(grep SwapFree /proc/meminfo | awk '{print $2}')
+TOTAL_SWAP=$(grep "SwapTotal" /proc/meminfo | awk '{print $2}')
+FREE_SWAP=$(grep "SwapFree" /proc/meminfo | awk '{print $2}')
 USED_SWAP=$((TOTAL_SWAP - FREE_SWAP))
 # convert swap to MB
 TOTAL_SWAP_MB=$((TOTAL_SWAP / 1024))
@@ -169,7 +170,7 @@ case $CHOICE in
     remove_pid_temp
     sudo service wart-node start
   else
-    echo "Already running!"
+    printf '%b' "[${P1}OK${N0}] Node is running!\n"
     sleep 1
   fi
   ;;
@@ -180,7 +181,7 @@ case $CHOICE in
     # stop wart-node
     sudo service wart-node stop
   else
-    echo "Nothing to stop!"
+    printf '%b' "[${P1}OK${N0}] Node is not running!\n"
     sleep 1
   fi
   ;;
@@ -191,7 +192,7 @@ case $CHOICE in
     # stop wart-node
     sudo service wart-node restart
   else
-    echo "Nothing to restart!"
+    printf '%b' "[${P1}OK${N0}] Node is not running!\n"
     sleep 1
   fi
   ;;
@@ -221,8 +222,8 @@ case $CHOICE in
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
-  read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
-Press Enter to continue" </dev/tty
+  printf '%b' "[${G1}OK${N0}] Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP\n"
+  read -r -p "[!?] Press Enter to continue" </dev/tty
   ;;
 "7") data_usage ;;
 "8") print_help ;;
