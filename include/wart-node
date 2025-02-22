@@ -168,6 +168,8 @@ if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
   NODE_STATUS="Online"
 else
   NODE_STATUS="Offline"
+  # remove old files
+  rm /tmp/pdown.tmp &>/dev/null
 fi
 # if zero
 if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
