@@ -18,7 +18,7 @@ print_balance() {
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "$RESULT" 5 "$(echo "18+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
+      --msgbox "$RESULT" 5 "$(echo "11+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
   }
   display_result
 }
@@ -37,7 +37,7 @@ print_address() {
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "$RESULT" 5 "$(echo "13+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
+      --msgbox "$RESULT" 5 "$(echo "6+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
   }
   display_result
 }
