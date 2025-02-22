@@ -16,7 +16,7 @@ clear
 # if missing
 if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
   echo "Found new configuration!"
-  echo "Stopping any running nodes.."
+  echo "Stopping wart node.."
   # start node
   sudo service wart-node stop &>/dev/null
   # output service file
