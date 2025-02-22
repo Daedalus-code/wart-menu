@@ -7,6 +7,38 @@ source /etc/wart-menu/include/data_usage
 
 ################################################################################
 
+# check for changes
+if [[ ! "$(grep "$WARTHOG_API")" -eq "$(grep "$WARTHOG_API" /etc/systemd/system/wart-node.service)" ]] &>/dev/null; then
+  # remove old file
+  rm /etc/systemd/system/wart-node.service &>/dev/null
+fi
+# if missing
+if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
+  echo "Installing wart-node.service.."
+  sleep 1
+  # service data
+  echo "[Unit]
+Description=Warthog Node
+
+[Service]
+WorkingDirectory=$WARTHOG_DIR/node
+ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS
+Restart=always
+
+[Install]
+WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
+  # install service
+  sudo mv /tmp/wrnsrv.tmp /etc/systemd/system/wart-node.service
+  # reload
+  sudo systemctl-reload
+  # change directory
+  cd src/node/ || exit
+  # start node
+  sudo service wart-node restart
+fi
+
+################################################################################
+
 # install check
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
@@ -67,33 +99,6 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
   read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
 Press Enter to continue" </dev/tty
-
-  ##############################################################################
-
-  # if missing
-  if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
-    echo "Creating wart-node.service.."
-    sleep 1
-    # service data
-    echo "[Unit]
-Description=Warthog Node
-
-[Service]
-WorkingDirectory=$WARTHOG_DIR/node
-ExecStart=$WARTHOG_DIR/node/wart-node --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS
-Restart=always
-
-[Install]
-WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
-  fi
-  # install service
-  sudo mv /tmp/wrnsrv.tmp /etc/systemd/system/wart-node.service
-  # reload
-  sudo systemctl-reload
-  # change directory
-  cd src/node/ || exit
-  # start node
-  ./wart-node
 fi
 
 # function to display help #####################################################
