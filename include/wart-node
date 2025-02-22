@@ -4,110 +4,7 @@
 
 source /etc/wart-menu/wart.config
 source /etc/wart-menu/include/data_usage
-
-################################################################################
-
-# check for changes for service that are ruled by configuration
-if [[ "$(grep -c "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service)" -eq "0" || "$(grep -c "$WARTHOG_API" /etc/systemd/system/wart-node.service)" -eq "0" ]] &>/dev/null; then
-  # remove old file
-  sudo rm /etc/systemd/system/wart-node.service &>/dev/null
-fi
-clear
-# if missing
-if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
-  echo "Found new configuration!"
-  echo "Stopping wart node.."
-  # start node
-  sudo service wart-node stop &>/dev/null
-  # output service file
-  echo "Installing wart-node.service.."
-  sleep 1
-  # service data
-  echo "[Unit]
-Description=Warthog Node
-
-[Service]
-WorkingDirectory=$WARTHOG_DIR/node
-ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS
-Restart=always
-
-[Install]
-WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
-  # install service
-  sudo mv /tmp/wrnsrv.tmp /etc/systemd/system/wart-node.service
-  echo "daemon-reload.."
-  # reload
-  sudo systemctl daemon-reload
-  # remove old files
-  rm /tmp/pdown.tmp &>/dev/null && rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
-  echo "Restarting wart-node.."
-  # start node
-  sudo service wart-node start
-fi
-
-################################################################################
-
-# install check
-if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
-
-  clear
-  # update system
-  sudo apt update
-  sudo apt install git
-  sudo apt install build-essential meson ninja-build
-  # git clone
-  cd || exit && git clone https://github.com/warthog-network/Warthog
-  # change directory
-  cd Warthog
-  # build
-  meson build --buildtype=release
-  # change directory
-  cd build || exit
-
-  ##############################################################################
-
-  # if total memory are less than 2GB
-  SYSTEM_MEMORY="$(echo "$(cat /proc/meminfo 2>/dev/null | grep "MemTotal" | awk '{ print $2 }')/1024" | bc 2>/dev/null)"
-  SYSTEM_SWAP="$(echo "$(cat /proc/meminfo 2>/dev/null | grep "SwapTotal" | awk '{ print $2 }')/1024" | bc 2>/dev/null)"
-  if [[ "$(echo "$SYSTEM_MEMORY+$SYSTEM_SWAP" | bc 2>/dev/null)" -lt "2000" ]] &>/dev/null; then
-    if dialog --stdout --title "Memory: ${SYSTEM_MEMORY}MB" \
-      --backtitle "Need more memory!" \
-      --yesno "Create 2GB swapfile?" 5 28; then
-      # get size from build trials
-      SWAP_SIZE="2G"
-      # default /swapfile
-      SWAP_PATH="/swapfile"
-      if [ ! -z "$2" ]; then
-        SWAP_PATH="$2"
-      fi
-      # create swap
-      sudo fallocate -l "$SWAP_SIZE $SWAP_PATH" # allocate size
-      sudo chmod 600 "$SWAP_PATH"               # set proper permission
-      sudo mkswap "$SWAP_PATH"                  # setup swap
-      sudo swapon "$SWAP_PATH"                  # enable swap
-      # if missing
-      if [[ "$(grep -c "swap" /etc/fstab)" -eq "0" ]] &>/dev/null; then
-        # add to fstab
-        echo "$SWAP_PATH   none    swap    sw    0   0" | sudo tee /etc/fstab -a
-      fi
-    fi
-  fi
-
-  ##############################################################################
-
-  # start counting (seconds)
-  START="$SECONDS"
-  # ninja -j threads
-  NINJA_THREADS="$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
-  # ninja -j"minus one thread"
-  ninja -j"$NINJA_THREADS"
-  # seconds since start
-  DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
-  # convert seconds
-  TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
-  read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
-Press Enter to continue" </dev/tty
-fi
+source /etc/wart-menu/include/install_node
 
 # function to display help #####################################################
 print_help() {
@@ -128,6 +25,11 @@ print_help() {
 OWNER="warthog-network"
 REPO="Warthog"
 
+# remove old files
+remove_pid_temp() {
+  rm /tmp/pdown.tmp &>/dev/null
+}
+
 # file age (seconds)
 PIDOF_WART_NODE_AGE="$(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 LATEST_RELEASE_AGE="$(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
@@ -135,8 +37,7 @@ INSTALLED_RELEASE_AGE="$(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null | while read las
 
 # if old enough
 if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
-  # remove old files
-  rm /tmp/pdown.tmp &>/dev/null
+  remove_pid_temp
 fi
 # if old enough
 if [[ "$LATEST_RELEASE_AGE" -gt "3600" || "$INSTALLED_RELEASE_AGE" -gt "3600" ]] &>/dev/null; then
@@ -172,8 +73,7 @@ else
 fi
 # if zero
 if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
-  # remove old files
-  rm /tmp/pdown.tmp &>/dev/null
+  remove_pid_temp
 fi
 
 ################################################################################
@@ -266,8 +166,7 @@ case $CHOICE in
 "1")
   # if zero
   if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    # remove old files
-    rm /tmp/pdown.tmp &>/dev/null
+    remove_pid_temp
     sudo service wart-node start
   else
     echo "Already running!"
@@ -277,8 +176,7 @@ case $CHOICE in
 "2")
   # if any data
   if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    # remove old files
-    rm /tmp/pdown.tmp &>/dev/null
+    remove_pid_temp
     # stop wart-node
     sudo service wart-node stop
   else
@@ -289,8 +187,7 @@ case $CHOICE in
 "3")
   # if any data
   if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    # remove old files
-    rm /tmp/pdown.tmp &>/dev/null
+    remove_pid_temp
     # stop wart-node
     sudo service wart-node restart
   else
