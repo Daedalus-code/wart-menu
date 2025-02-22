@@ -240,18 +240,19 @@ Memory.: ${USED_MEM_MB:?} MB / ${TOTAL_MEM_MB:?} MB ${USED_MEM_PERCENTAGE}%
 SWAP...: ${USED_SWAP_MB:?} MB / ${TOTAL_SWAP_MB:?} MB ${USED_SWAP_PERCENTAGE}%
 Node...: v$INSTALLED_RELEASE $NEW_RELEASE $NODE_UPTIME
 Status.: $NODE_STATUS PID: $PIDOF_WART_NODE"
-CHOICE_HEIGHT="7"
-HEIGHT="19"
+CHOICE_HEIGHT="8"
+HEIGHT="20"
 WIDTH="46"
 
 OPTIONS=(
   1 "Start            Run wart-node"
   2 "Stop             Kill wart-node"
   3 "Restart          Restart wart-node"
-  4 "Config           wart-node.service"
-  5 "Update           Update wart-node"
-  6 "Data             Data usage"
-  7 "Help")
+  4 "Status           Service status"
+  5 "Config           wart-node.service"
+  6 "Update           Update wart-node"
+  7 "Data             Data usage"
+  8 "Help")
 
 CHOICE=$(dialog --clear \
   --title "$TITLE" \
@@ -297,8 +298,17 @@ case $CHOICE in
     sleep 1
   fi
   ;;
-"4") sudo nano /etc/systemd/system/wart-node.service ;;
-"5")
+"4")
+  # display function
+  display_result() {
+    dialog --title "Wart-node.service status" \
+      --no-collapse \
+      --msgbox "$(service wart-node status)" 0 0
+  }
+  display_result
+  ;;
+"5") sudo nano /etc/systemd/system/wart-node.service ;;
+"6")
   # if any data
   if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
     # stop wart-node
@@ -317,8 +327,8 @@ case $CHOICE in
   read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
 Press Enter to continue" </dev/tty
   ;;
-"6") data_usage ;;
-"7") print_help ;;
+"7") data_usage ;;
+"8") print_help ;;
 esac
 
 # END
