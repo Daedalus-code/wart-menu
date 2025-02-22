@@ -15,6 +15,9 @@ fi
 clear
 # if missing
 if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
+  # start node
+  sudo service wart-node stop &>/dev/null
+  # output service file
   echo "Installing wart-node.service.."
   sleep 1
   # service data
