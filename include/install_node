@@ -22,7 +22,7 @@ clear
 # if missing
 if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
   printf '%b' "[${G1}OK${N0}] Stopping wart node..\n"
-  # start node
+  # stop node
   sudo service wart-node stop &>/dev/null
   # output service file
   printf '%b' "[${G1}OK${N0}] Installing/Updating wart-node.service..\n"
@@ -41,7 +41,7 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   # install service
   sudo mv /tmp/wrnsrv.tmp /etc/systemd/system/wart-node.service
   printf '%b' "[${G1}OK${N0}] daemon-reload..\n"
-  # reload
+  # daemon-reload
   sudo systemctl daemon-reload
   # remove old files
   rm /tmp/pdown.tmp &>/dev/null && rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
