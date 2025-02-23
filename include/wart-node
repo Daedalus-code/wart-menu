@@ -28,22 +28,27 @@ remove_pid_temp() {
 
 ################################################################################
 
+# system date
 DATE="$(date +%s)"
-
+# wallet peers
 WALLET_PEERS=$(("$DATE" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))
+# wallet banned peers
 WALLET_BANNED=$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))
+# wallet head
 WALLET_HEAD=$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))
+
 # of missing, if old enough
 if [[ ! -f /tmp/wprs.tmp ||
   "$WALLET_PEERS" -gt "60" ||
   ! -f /tmp/wbnd.tmp ||
-  "$WALLET_BANNED" -gt "180" ||
+  "$WALLET_BANNED" -gt "90" ||
   ! -f /tmp/whd.tmp ||
   "$WALLET_HEAD" -gt "120" ]] &>/dev/null; then
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
   echo "$(curl -s "$WARTHOG_API"/peers/banned 2>/dev/null | egrep -c "[0-9]+")" >/tmp/wbnd.tmp
   echo "$(curl -s "$WARTHOG_API"/chain/head 2>/dev/null)" >/tmp/whd.tmp
 fi
+
 # wallet peers
 WALLET_PEERS="$(cat /tmp/wprs.tmp 2>/dev/null)"
 # wallet peers
@@ -52,6 +57,7 @@ WALLET_BANNED="$(cat /tmp/wbnd.tmp 2>/dev/null)"
 WALLET_SYNCED="$(grep "synced" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
 # wallet height
 WALLET_HEIGHT="$(grep "height" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
+
 # if zero
 if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
   WALLET_PEERS="0"
@@ -143,11 +149,13 @@ SYSTEM_UPTIME="$(awk '{print $1}' /proc/uptime | cut -d. -f1)"
 # calculate into days
 SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
-UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
+SYSTEM_UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
 # service uptime
-WART_UPTIME=$(ps -p "$PIDOF_WART_NODE" -o etime= | xargs | awk -F '[-:]' '{if(NF==4) printf "%dd:%dh:%dm:%ds\n", $1, $2, $3, $4; else if(NF==3) printf "%dh:%dm:%ds\n", $1, $2, $3; else printf "%dm:%ds\n", $1, $2}')
+WART_UPTIME=$(ps -p "$PIDOF_WART_NODE" -o etime= | awk -F'[:-]' '{sec = $NF;min = $(NF-1);hr = (NF>2) ? $(NF-2) : 0;day = (NF>3) ? $(NF-3) : 0;print (day*86400) + (hr*3600) + (min*60) + sec;}')
 # calculate into days
-WART_UPTIME_DAYS="$(echo "$(echo "$WART_UPTIME" | awk -F: '{ print $1 }' | tr -d 'h')/24" | bc 2>/dev/null)"
+WART_UPTIME_DAYS="$(echo "$WART_UPTIME/86400" | bc 2>/dev/null)"
+# format output in hours, minutes and seconds
+WART_UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${WART_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${WART_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${WART_UPTIME:?}" 2>&1)%60")))"
 
 ################################################################################
 
@@ -167,8 +175,8 @@ fi
 
 TITLE="Wart-Node Menu"
 MENU="Load....: $SYSTEM_LOAD $CPU_TEMP
-System..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
-Node....: $WART_UPTIME_DAYS Days - $WART_UPTIME
+System..: $SYSTEM_UPTIME_DAYS Days - $SYSTEM_UPTIME_FORMATTED
+Node....: $WART_UPTIME_DAYS Days - $WART_UPTIME_FORMATTED
 Status..: $NODE_STATUS - Sync: $WALLET_SYNCED
 Peers...: $WALLET_PEERS - Banned: $WALLET_BANNED
 Version.: v$INSTALLED_RELEASE $NEW_RELEASE
