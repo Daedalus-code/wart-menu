@@ -157,6 +157,19 @@ WART_UPTIME_DAYS="$(echo "$WART_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
 WART_UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${WART_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${WART_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${WART_UPTIME:?}" 2>&1)%60")))"
 
+# if greater than n
+if [[ "$SYSTEM_UPTIME_DAYS" -gt "1" ]] &>/dev/null; then
+  SYSTEM_DAY_DAYS="Days"
+else
+  SYSTEM_DAY_DAYS="Day"
+fi
+# if greater than n
+if [[ "$WART_UPTIME_DAYS" -gt "1" ]] &>/dev/null; then
+  WART_DAY_DAYS="Days"
+else
+  WART_DAY_DAYS="Day"
+fi
+
 ################################################################################
 
 # cpu temp
@@ -175,8 +188,8 @@ fi
 
 TITLE="Wart-Node Menu"
 MENU="Load....: $SYSTEM_LOAD $CPU_TEMP
-System..: $SYSTEM_UPTIME_DAYS Days - $SYSTEM_UPTIME_FORMATTED
-Node....: $WART_UPTIME_DAYS Days - $WART_UPTIME_FORMATTED
+System..: $SYSTEM_UPTIME_DAYS $SYSTEM_DAY_DAYS - $SYSTEM_UPTIME_FORMATTED
+Node....: $WART_UPTIME_DAYS $WART_DAY_DAYS - $WART_UPTIME_FORMATTED
 Status..: $NODE_STATUS - Sync: $WALLET_SYNCED
 Peers...: $WALLET_PEERS - Banned: $WALLET_BANNED
 Version.: v$INSTALLED_RELEASE $NEW_RELEASE
