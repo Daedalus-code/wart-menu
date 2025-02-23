@@ -30,7 +30,7 @@ remove_pid_temp() {
 
 WALLET_PEERS="$(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 # of missing, if old enough
-if [[ ! -f /tmp/wprs.tmp || "$WALLET_PEERS" -gt "60" ]] &>/dev/null; then
+if [[ ! -f /tmp/wprs.tmp || "$WALLET_PEERS" -gt "180" ]] &>/dev/null; then
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
 fi
 # wallet peers
@@ -140,7 +140,7 @@ Uptime.: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
 Node...: v$INSTALLED_RELEASE $NEW_RELEASE $NODE_UPTIME
 Status.: $NODE_STATUS PID: $PIDOF_WART_NODE P2P: $WALLET_PEERS"
 CHOICE_HEIGHT="7"
-HEIGHT="19"
+HEIGHT="16"
 WIDTH="46"
 
 OPTIONS=(
@@ -150,7 +150,7 @@ OPTIONS=(
   4 "Status           Service status"
   5 "Config           wart-node.service"
   6 "Update           Update wart-node"
-  8 "Help")
+  7 "Help")
 
 CHOICE=$(dialog --clear \
   --title "$TITLE" \
@@ -222,7 +222,7 @@ case $CHOICE in
   printf '%b' "[${G1}OK${N0}] Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP\n"
   read -r -p "[!?] Press Enter to continue" </dev/tty
   ;;
-"8") print_help ;;
+"7") print_help ;;
 esac
 
 # END
