@@ -28,9 +28,11 @@ remove_pid_temp() {
 
 ################################################################################
 
-WALLET_PEERS="$(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
-WALLET_BANNED="$(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
-WALLET_HEAD="$(stat -c '%Y' /tmp/whd.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+DATE="$(date +%s)"
+
+WALLET_PEERS=$(("$DATE" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))
+WALLET_BANNED=$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))
+WALLET_HEAD=$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))
 # of missing, if old enough
 if [[ ! -f /tmp/wprs.tmp ||
   "$WALLET_PEERS" -gt "180" ||
@@ -39,16 +41,15 @@ if [[ ! -f /tmp/wprs.tmp ||
   ! -f /tmp/whd.tmp ||
   "$WALLET_HEAD" -gt "180" ]] &>/dev/null; then
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
+  echo "$(curl -s "$WARTHOG_API"/peers/banned 2>/dev/null | egrep -c "[0-9]+")" >/tmp/wbnd.tmp
   echo "$(curl -s "$WARTHOG_API"/chain/head 2>/dev/null)" >/tmp/whd.tmp
 fi
 # wallet peers
 WALLET_PEERS="$(cat /tmp/wprs.tmp 2>/dev/null)"
 # wallet peers
-WALLET_BANNED="$(cat /tmp/wbnd.tmp 2>/dev/null | egrep -c "[0-9]+")"
-# chain head
-WALLET_HEAD="$(cat /tmp/whd.tmp 2>/dev/null)"
+WALLET_BANNED="$(cat /tmp/wbnd.tmp 2>/dev/null)"
 # wallet synced
-WALLET_SYNCED="$(echo "$WALLET_HEAD" | grep "synced" | awk '{ print $2 }' | tr -d ',')"
+WALLET_SYNCED="$(grep "synced" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
 # if zero
 if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
   WALLET_PEERS="0"
@@ -62,7 +63,7 @@ fi
 
 ################################################################################
 
-PIDOF_WART_NODE_AGE="$(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+PIDOF_WART_NODE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null)))
 # if old enough
 if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
   remove_pid_temp
@@ -70,8 +71,8 @@ fi
 
 ################################################################################
 
-LATEST_RELEASE_AGE="$(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
-INSTALLED_RELEASE_AGE="$(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+LATEST_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null)))
+INSTALLED_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null)))
 # if old enough
 if [[ "$LATEST_RELEASE_AGE" -gt "3600" || "$INSTALLED_RELEASE_AGE" -gt "3600" ]] &>/dev/null; then
   # remove old files
@@ -144,10 +145,12 @@ WART_UPTIME_DAYS="$(echo "$(echo "$WART_UPTIME" | awk -F: '{ print $1 }' | tr -d
 
 ################################################################################
 
+# cpu temp
+THERMAL_ZONE="$(cat /sys/class/thermal/thermal_zone*/temp)"
 # if CPU temp exist
-if [[ "$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | wc -l)" -gt "0" ]] &>/dev/null; then
+if [[ -n "$THERMAL_ZONE" ]] &>/dev/null; then
   # calculate cpu temp
-  CPU_TEMP_CALCULATED="$(echo "$(cat /sys/class/thermal/thermal_zone*/temp)/1024" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
+  CPU_TEMP_CALCULATED="$(echo "$THERMAL_ZONE/1024" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
   # output cpu temp
   CPU_TEMP="- CPU: ${CPU_TEMP_CALCULATED}°C"
 else
@@ -236,7 +239,7 @@ case $CHOICE in
   # start counting (seconds)
   START="$SECONDS"
   # ninja -j threads
-  NINJA_THREADS="$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
+  NINJA_THREADS="$(echo "$(grep -c "processor" /proc/cpuinfo 2>/dev/null)-1" | bc 2>/dev/null)"
   # change directory, ninja, -jall_threads-1 buffer thread
   cd || exit && cd Warthog && git pull && cd build || exit && ninja -j"$NINJA_THREADS"
   # seconds since start
