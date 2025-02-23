@@ -118,7 +118,7 @@ SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
 UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
 # service uptime
-NODE_UPTIME="$(ps -p "$PIDOF_WART_NODE" -o etime= 2>/dev/null)"
+WART_UPTIME=$(ps -p "$PIDOF_WART_NODE" -o etime= | awk -F '[-:]' '{if(NF==4) printf "%dd:%dh:%dm:%ds\n", $1, $2, $3, $4; else if(NF==3) printf "%dh:%dm:%ds\n", $1, $2, $3; else printf "%dm:%ds\n", $1, $2}')
 
 ################################################################################
 
@@ -137,10 +137,10 @@ fi
 TITLE="Wart-Node Menu"
 MENU="Load...: $SYSTEM_LOAD $CPU_TEMP
 Uptime.: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
-Node...: v$INSTALLED_RELEASE $NEW_RELEASE $NODE_UPTIME
+Node...: v$INSTALLED_RELEASE $NEW_RELEASE - $NODE_UPTIME
 Status.: $NODE_STATUS PID: $PIDOF_WART_NODE P2P: $WALLET_PEERS"
 CHOICE_HEIGHT="7"
-HEIGHT="16"
+HEIGHT="17"
 WIDTH="46"
 
 OPTIONS=(
