@@ -35,11 +35,11 @@ WALLET_BANNED=$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))
 WALLET_HEAD=$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))
 # of missing, if old enough
 if [[ ! -f /tmp/wprs.tmp ||
-  "$WALLET_PEERS" -gt "180" ||
+  "$WALLET_PEERS" -gt "60" ||
   ! -f /tmp/wbnd.tmp ||
   "$WALLET_BANNED" -gt "180" ||
   ! -f /tmp/whd.tmp ||
-  "$WALLET_HEAD" -gt "180" ]] &>/dev/null; then
+  "$WALLET_HEAD" -gt "120" ]] &>/dev/null; then
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
   echo "$(curl -s "$WARTHOG_API"/peers/banned 2>/dev/null | egrep -c "[0-9]+")" >/tmp/wbnd.tmp
   echo "$(curl -s "$WARTHOG_API"/chain/head 2>/dev/null)" >/tmp/whd.tmp
@@ -50,6 +50,8 @@ WALLET_PEERS="$(cat /tmp/wprs.tmp 2>/dev/null)"
 WALLET_BANNED="$(cat /tmp/wbnd.tmp 2>/dev/null)"
 # wallet synced
 WALLET_SYNCED="$(grep "synced" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
+# wallet height
+WALLET_HEIGHT="$(grep "height" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
 # if zero
 if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
   WALLET_PEERS="0"
@@ -59,6 +61,10 @@ if [[ "$WALLET_SYNCED" == "true" ]] &>/dev/null; then
   WALLET_SYNCED="OK"
 else
   WALLET_SYNCED="..."
+fi
+# if zero
+if [[ -z "$WALLET_HEIGHT" ]] &>/dev/null; then
+  WALLET_HEIGHT="null"
 fi
 
 ################################################################################
@@ -146,7 +152,7 @@ WART_UPTIME_DAYS="$(echo "$(echo "$WART_UPTIME" | awk -F: '{ print $1 }' | tr -d
 ################################################################################
 
 # cpu temp
-THERMAL_ZONE="$(cat /sys/class/thermal/thermal_zone*/temp)"
+THERMAL_ZONE="$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null)"
 # if CPU temp exist
 if [[ -n "$THERMAL_ZONE" ]] &>/dev/null; then
   # calculate cpu temp
@@ -165,9 +171,10 @@ System..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
 Node....: $WART_UPTIME_DAYS Days - $WART_UPTIME
 Status..: $NODE_STATUS - Sync: $WALLET_SYNCED
 Peers...: $WALLET_PEERS - Banned: $WALLET_BANNED
-Version.: v$INSTALLED_RELEASE $NEW_RELEASE"
+Version.: v$INSTALLED_RELEASE $NEW_RELEASE
+Height..: $WALLET_HEIGHT"
 CHOICE_HEIGHT="7"
-HEIGHT="19"
+HEIGHT="20"
 WIDTH="46"
 
 OPTIONS=(
@@ -243,7 +250,7 @@ case $CHOICE in
   # change directory, ninja, -jall_threads-1 buffer thread
   cd || exit && cd Warthog && git pull && cd build || exit && ninja -j"$NINJA_THREADS"
   # seconds since start
-  DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
+  DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>/dev/null)
   # convert seconds
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
   printf '%b' "[${G1}OK${N0}] Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP\n"
