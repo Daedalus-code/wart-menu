@@ -29,15 +29,35 @@ remove_pid_temp() {
 ################################################################################
 
 WALLET_PEERS="$(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+WALLET_BANNED="$(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
+WALLET_HEAD="$(stat -c '%Y' /tmp/whd.tmp 2>/dev/null | while read lastedit; do echo "$(($(date +%s) - $lastedit))"; done)"
 # of missing, if old enough
-if [[ ! -f /tmp/wprs.tmp || "$WALLET_PEERS" -gt "180" ]] &>/dev/null; then
+if [[ ! -f /tmp/wprs.tmp ||
+  "$WALLET_PEERS" -gt "180" ||
+  ! -f /tmp/wbnd.tmp ||
+  "$WALLET_BANNED" -gt "180" ||
+  ! -f /tmp/whd.tmp ||
+  "$WALLET_HEAD" -gt "180" ]] &>/dev/null; then
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
+  echo "$(curl -s "$WARTHOG_API"/chain/head 2>/dev/null)" >/tmp/whd.tmp
 fi
 # wallet peers
 WALLET_PEERS="$(cat /tmp/wprs.tmp 2>/dev/null)"
+# wallet peers
+WALLET_BANNED="$(cat /tmp/wbnd.tmp 2>/dev/null | egrep -c "[0-9]+")"
+# chain head
+WALLET_HEAD="$(cat /tmp/whd.tmp 2>/dev/null)"
+# wallet synced
+WALLET_SYNCED="$(echo "$WALLET_HEAD" | grep "synced" | awk '{ print $2 }' | tr -d ',')"
 # if zero
 if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
   WALLET_PEERS="0"
+fi
+# if true
+if [[ "$WALLET_SYNCED" == "true" ]] &>/dev/null; then
+  WALLET_SYNCED="OK"
+else
+  WALLET_SYNCED="..."
 fi
 
 ################################################################################
@@ -88,7 +108,7 @@ INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
 if [[ "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
   NEW_RELEASE="-> v$LATEST_RELEASE!"
 else
-  NEW_RELEASE="[OK]"
+  NEW_RELEASE="OK"
 fi
 # if online
 if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
@@ -119,6 +139,8 @@ SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
 UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
 # service uptime
 WART_UPTIME=$(ps -p "$PIDOF_WART_NODE" -o etime= | xargs | awk -F '[-:]' '{if(NF==4) printf "%dd:%dh:%dm:%ds\n", $1, $2, $3, $4; else if(NF==3) printf "%dh:%dm:%ds\n", $1, $2, $3; else printf "%dm:%ds\n", $1, $2}')
+# calculate into days
+WART_UPTIME_DAYS="$(echo "$(echo "$WART_UPTIME" | awk -F: '{ print $1 }' | tr -d 'h')/24" | bc 2>/dev/null)"
 
 ################################################################################
 
@@ -135,12 +157,14 @@ fi
 ################################################################################
 
 TITLE="Wart-Node Menu"
-MENU="Load...: $SYSTEM_LOAD $CPU_TEMP
-Uptime.: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
-Node...: v$INSTALLED_RELEASE $NEW_RELEASE - $WART_UPTIME
-Status.: $NODE_STATUS PID: $PIDOF_WART_NODE P2P: $WALLET_PEERS"
+MENU="Load....: $SYSTEM_LOAD $CPU_TEMP
+System..: $SYSTEM_UPTIME_DAYS Days - $UPTIME_FORMATTED
+Node....: $WART_UPTIME_DAYS Days - $WART_UPTIME
+Status..: $NODE_STATUS - Sync: $WALLET_SYNCED
+Peers...: $WALLET_PEERS - Banned: $WALLET_BANNED
+Version.: v$INSTALLED_RELEASE $NEW_RELEASE"
 CHOICE_HEIGHT="7"
-HEIGHT="17"
+HEIGHT="19"
 WIDTH="46"
 
 OPTIONS=(
