@@ -149,7 +149,7 @@ if [[ "$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | wc -l)" -gt "0"
   # calculate cpu temp
   CPU_TEMP_CALCULATED="$(echo "$(cat /sys/class/thermal/thermal_zone*/temp)/1024" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
   # output cpu temp
-  CPU_TEMP="Temp: ${CPU_TEMP_CALCULATED}°C"
+  CPU_TEMP="- CPU: ${CPU_TEMP_CALCULATED}°C"
 else
   CPU_TEMP=""
 fi
