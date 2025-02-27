@@ -106,19 +106,19 @@ iwconfig_result() {
 }
 
 # menu #########################################################################
-HEIGHT="11"
+HEIGHT="10"
 WIDTH="42"
-CHOICE_HEIGHT="5"
+CHOICE_HEIGHT="4"
 BACKTITLE="Network-Tools"
 TITLE="Network options"
 MENU=""
 
 OPTIONS=(
-  1 "Network          Configuration"
-  2 "Wireless         Wi-Fi Network"
-  3 "Network          ifconfig"
-  4 "Wireless         iwconfig"
-  5 "Data             Data usage")
+  1 "Network          Edit configs"
+  2 "Ethernet         Configuration"
+  3 "Wireless         Configuration"
+  4 "Data             Net Usage"
+)
 
 CHOICE=$(dialog --clear \
   --backtitle "$BACKTITLE" \
@@ -131,12 +131,63 @@ CHOICE=$(dialog --clear \
 clear
 case $CHOICE in
 "1") sudo nano /etc/netplan/* ;; # ethernet
-"2") wireless_menu ;;            # wireless
-"3") ifconfig_result ;;          # interface
-"4") iwconfig_result ;;          # wireless
-"5") data_usage ;;               # data usage
-"0") exit ;;                     # exit
-"*") break ;;                    # break
+
+# ethernet #####################################################################
+"2")
+  HEIGHT="6"
+  WIDTH="36"
+  CHOICE_HEIGHT="1"
+  BACKTITLE="Network-Tools"
+  TITLE="Ethernet options"
+  MENU=""
+
+  OPTIONS=(1 "Interface        ifconfig")
+
+  CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+  clear
+  case $CHOICE in
+  "1") ifconfig_result ;; # interface
+  esac
+  ;;
+
+# wireless #####################################################################
+"3")
+  HEIGHT="8"
+  WIDTH="36"
+  CHOICE_HEIGHT="2"
+  BACKTITLE="Network-Tools"
+  TITLE="Wireless options"
+  MENU=""
+
+  OPTIONS=(
+    1 "Wireless         iwconfig"
+    2 "Scan             Networks"
+  )
+
+  CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+  clear
+  case $CHOICE in
+  "1") iwconfig_result ;; # wireless iwconfig
+  "2") wireless_menu ;;   # wireless menu
+  esac
+  ;;
+"4") data_usage ;; # data usage
+"0") exit ;;       # exit
+"*") break ;;      # break
 esac
 
 # END
