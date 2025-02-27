@@ -9,6 +9,9 @@ Warthog menu
 
 After install you can start ````wart-menu```` in terminal right away.  
 
+![alt text](https://i.imgur.com/LdqIzSG.png)  
+![alt text](https://i.imgur.com/8MqQxJ2.png)  
+
 At your own risk, this was made for ease setup for warthog node and wallet.  
 Please remember to backup PRIVATEKEY!  
 
