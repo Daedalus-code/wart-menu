@@ -11,7 +11,7 @@ wart_price() {
   # price age
   PRICE_AGE=$(("$(date +%s)" - $(stat -c '%Y' /tmp/prcwrt.tmp 2>/dev/null)))
   # if missing, if old
-  if [[ ! -f /tmp/prcwrt.tmp || "$PRICE_AGE" -gt "120" ]] &>/dev/null; then
+  if [[ ! -f /tmp/prcwrt.tmp || "$PRICE_AGE" -gt "420" ]] &>/dev/null; then
     CRYPTO="warthog"
     CURRENCY="usd"
     # fetch the latest price from CoinGecko API
