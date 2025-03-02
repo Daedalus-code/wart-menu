@@ -9,7 +9,7 @@ source /etc/wart-menu/include/color
 
 wart_price() {
   # price age
-  PRICE_AGE=$(("$(date +%s)" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))
+  PRICE_AGE=$(("$(date +%s)" - $(stat -c '%Y' /tmp/prcwrt.tmp 2>/dev/null)))
   # if missing, if old
   if [[ ! -f /tmp/prcwrt.tmp || "$PRICE_AGE" -gt "120" ]] &>/dev/null; then
     CRYPTO="warthog"
