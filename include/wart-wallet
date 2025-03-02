@@ -5,21 +5,50 @@
 source /etc/wart-menu/wart.config
 source /etc/wart-menu/include/color
 
+# cryptocurrency and currency ##################################################
+
+wart_price() {
+  # price age
+  PRICE_AGE=$(("$(date +%s)" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))
+  # if missing, if old
+  if [[ ! -f /tmp/prcwrt.tmp || "$PRICE_AGE" -gt "120" ]] &>/dev/null; then
+    CRYPTO="warthog"
+    CURRENCY="usd"
+    # fetch the latest price from CoinGecko API
+    PRICE=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=$CRYPTO&vs_currencies=$CURRENCY" | jq -r ".$CRYPTO.$CURRENCY")
+    # check if the price was fetched successfully
+    if [ -n "$PRICE" ]; then
+      echo "$PRICE" >/tmp/prcwrt.tmp
+    fi
+  fi
+  # wart price
+  WART_PRICE="$(cat /tmp/prcwrt.tmp 2>/dev/null)"
+}
+
 # function to print wallet balance #############################################
 print_balance() {
+  # fetch wart price
+  wart_price
   # balance
-  RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -b 2>/dev/null)"
+  WART_BALANCE="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -b 2>/dev/null)"
+  # calculate balance value
+  WART_VALUE="$(echo "$WART_BALANCE*$WART_PRICE" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
   # if zero
-  if [[ -z "$RESULT" ]] &>/dev/null; then
-    RESULT="Please wait for the node!"
+  if [[ -z "$WART_BALANCE" ]] &>/dev/null; then
+    HEIGHT="6"
+    RESULT="Please wait for the node!
+Syncing.."
   else
-    RESULT="Balance: $RESULT WART"
+    HEIGHT="7"
+    RESULT="Balance : $WART_BALANCE WART
+Value : $WART_VALUE USD
+Price : $WART_PRICE USD"
   fi
   # display function
   display_result() {
     dialog --title "$BACKTITLE" \
       --no-collapse \
-      --msgbox "$RESULT" 5 "$(echo "4+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
+      --msgbox "$(echo "$RESULT" | column -t)" "$HEIGHT" "$(echo "8+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
   }
   display_result
 }
@@ -178,7 +207,7 @@ print_help() {
 HEIGHT="14"
 WIDTH="28"
 CHOICE_HEIGHT="14"
-BACKTITLE="Warthog Wallet"
+BACKTITLE="Wallet"
 TITLE="Wart-Wallet"
 MENU="Load: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
 
