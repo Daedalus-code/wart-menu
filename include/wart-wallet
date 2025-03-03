@@ -14,9 +14,9 @@ wart_price() {
   if [[ ! -f /tmp/prcwrt.tmp || "$PRICE_AGE" -gt "420" ]] &>/dev/null; then
     CRYPTO="warthog"
     CURRENCY="usd"
-    # fetch the latest price from CoinGecko API
-    PRICE=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=$CRYPTO&vs_currencies=$CURRENCY" | jq -r ".$CRYPTO.$CURRENCY")
-    # check if the price was fetched successfully
+    # fetch the latest price from coingecko api
+    PRICE=$(timeout 10 curl -s "https://api.coingecko.com/api/v3/simple/price?ids=$CRYPTO&vs_currencies=$CURRENCY" | jq -r ".$CRYPTO.$CURRENCY")
+    # any price data
     if [ -n "$PRICE" ]; then
       echo "$PRICE" >/tmp/prcwrt.tmp
     fi
