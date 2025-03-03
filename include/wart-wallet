@@ -8,21 +8,27 @@ source /etc/wart-menu/include/color
 # cryptocurrency and currency ##################################################
 
 wart_price() {
-  # price age
-  PRICE_AGE=$(("$(date +%s)" - $(stat -c '%Y' /tmp/prcwrt.tmp 2>/dev/null)))
-  # if missing, if old
-  if [[ ! -f /tmp/prcwrt.tmp || "$PRICE_AGE" -gt "420" ]] &>/dev/null; then
+  # check last price age
+  PRICE_FILE="/tmp/prcwrt.tmp"
+  # if found
+  if [ -f "$PRICE_FILE" ]; then
+    PRICE_AGE="$(($(date +%s) - $(stat -c '%Y' "$PRICE_FILE")))"
+  else
+    PRICE_AGE="9999" # assume it's too old if the file doesn't exist
+  fi
+  # if the file is missing or the data is older than 420 seconds, fetch new price
+  if [ ! -f "$PRICE_FILE" ] || [ "$PRICE_AGE" -gt "420" ]; then
     CRYPTO="warthog"
     CURRENCY="usd"
-    # fetch the latest price from coingecko api
+    # fetch the latest price from the coingecko api
     PRICE=$(timeout 10 curl -s "https://api.coingecko.com/api/v3/simple/price?ids=$CRYPTO&vs_currencies=$CURRENCY" | jq -r ".$CRYPTO.$CURRENCY")
-    # any price data
-    if [ -n "$PRICE" ]; then
-      echo "$PRICE" >/tmp/prcwrt.tmp
+    # if the api returned a valid price, update the cache
+    if [ -n "$PRICE" ] && [ "$PRICE" != "null" ]; then
+      echo "$PRICE" >"$PRICE_FILE"
     fi
   fi
-  # wart price
-  WART_PRICE="$(cat /tmp/prcwrt.tmp 2>/dev/null)"
+  # read the (possibly updated) cached price
+  WART_PRICE=$(cat "$PRICE_FILE" 2>/dev/null)
 }
 
 # function to print wallet balance #############################################
