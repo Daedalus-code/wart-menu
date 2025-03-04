@@ -38,15 +38,17 @@ if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
   printf '%b' "[${G1}OK${N0}] Installing/Updating wart-node.service..\n"
   sleep 1
 
+  # execStart
+  SERVICE_START="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
   # if zero
   if [[ -z "$WARTHOG_STRATUM" ]] &>/dev/null; then
     # normal node
-    WARTHOG_EXECSTART="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
+    WARTHOG_EXECSTART="$SERVICE_START"
   fi
   # if any data
   if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
     # node + solo mining
-    WARTHOG_EXECSTART="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS --stratum=$WARTHOG_STRATUM"
+    WARTHOG_EXECSTART="$SERVICE_START --stratum=$WARTHOG_STRATUM"
   fi
 
   # service data
