@@ -16,6 +16,16 @@ if ! grep -q "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service ||
   sudo rm -f /etc/systemd/system/wart-node.service
 fi
 
+# if any data
+if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
+  # check if wart-node.service needs updating
+  if ! grep -q "$WARTHOG_STRATUM" /etc/systemd/system/wart-node.service; then
+    printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
+    # remove old file
+    sudo rm -f /etc/systemd/system/wart-node.service
+  fi
+fi
+
 ################################################################################
 
 clear
@@ -27,13 +37,25 @@ if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
   # output service file
   printf '%b' "[${G1}OK${N0}] Installing/Updating wart-node.service..\n"
   sleep 1
+
+  # if zero
+  if [[ -z "$WARTHOG_STRATUM" ]] &>/dev/null; then
+    # normal node
+    WARTHOG_EXECSTART="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
+  fi
+  # if any data
+  if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
+    # node + solo mining
+    WARTHOG_EXECSTART="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS --stratum=$WARTHOG_STRATUM"
+  fi
+
   # service data
   echo "[Unit]
 Description=Warthog Node
 
 [Service]
 WorkingDirectory=$WARTHOG_DIR/node
-ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS
+$WARTHOG_EXECSTART
 Restart=always
 
 [Install]

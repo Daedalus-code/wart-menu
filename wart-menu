@@ -82,8 +82,6 @@ install_update() {
     # make executable
     chmod +x /hive/bin/wart-menu
   fi
-  # continue
-  read -r -p "[!?] Press Enter to continue" </dev/tty
 }
 
 # if missing
