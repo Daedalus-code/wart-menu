@@ -161,7 +161,13 @@ SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
 SYSTEM_UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
 # service uptime
-WART_UPTIME=$(ps -p "$PIDOF_WART_NODE" -o etime= | awk -F'[:-]' '{sec = $NF;min = $(NF-1);hr = (NF>2) ? $(NF-2) : 0;day = (NF>3) ? $(NF-3) : 0;print (day*86400) + (hr*3600) + (min*60) + sec;}')
+WART_UPTIME=$(ps -p "$PIDOF_WART_NODE" -o etime= 2>/dev/null | awk -F'[:-]' '{sec = $NF;min = $(NF-1);hr = (NF>2) ? $(NF-2) : 0;day = (NF>3) ? $(NF-3) : 0;print (day*86400) + (hr*3600) + (min*60) + sec;}')
+
+# if zero
+if [[ -z "$WART_UPTIME" ]] &>/dev/null; then
+  WART_UPTIME="0"
+fi
+
 # calculate into days
 WART_UPTIME_DAYS="$(echo "$WART_UPTIME/86400" | bc 2>/dev/null)"
 # format output in hours, minutes and seconds
