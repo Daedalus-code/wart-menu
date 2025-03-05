@@ -28,6 +28,7 @@ remove_pid_temp() {
 
 ################################################################################
 
+# update wallet data
 update_wallet_data() {
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
   echo "$(curl -s "$WARTHOG_API"/peers/banned 2>/dev/null | egrep -c "[0-9]+")" >/tmp/wbnd.tmp
@@ -87,25 +88,28 @@ fi
 
 ################################################################################
 
-LATEST_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null)))
-INSTALLED_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null)))
-# if old enough
-if [[ "$LATEST_RELEASE_AGE" -gt "3600" || "$INSTALLED_RELEASE_AGE" -gt "3600" ]] &>/dev/null; then
-  # remove old files
-  rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
-fi
-
-################################################################################
-
-# latest release owner and repo
-OWNER="warthog-network"
-REPO="Warthog"
-# if missing
-if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
+# update version data
+update_version_data() {
+  # latest release owner and repo
+  OWNER="warthog-network"
+  REPO="Warthog"
   # fetch the latest release tag from gitHub api
   echo "$(curl -s "https://api.github.com/repos/$OWNER/$REPO/releases/latest" | jq -r .tag_name)" >/tmp/ltrwr.tmp
   # fetch wart-node version
   echo "$(cd "$WARTHOG_DIR"/node && ./wart-node --version | awk '{ print $2 }' | tr -d 'v')" >/tmp/rnwr.tmp
+}
+
+# if missing
+if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
+  update_version_data
+fi
+
+LATEST_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null)))
+INSTALLED_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null)))
+
+# if old enough
+if [[ "$LATEST_RELEASE_AGE" -gt "3600" || "$INSTALLED_RELEASE_AGE" -gt "3600" ]] &>/dev/null; then
+  update_version_data
 fi
 
 ################################################################################
