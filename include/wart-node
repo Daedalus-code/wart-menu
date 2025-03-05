@@ -21,13 +21,6 @@ print_help() {
 
 ################################################################################
 
-# remove old files
-remove_pid_temp() {
-  rm /tmp/pdown.tmp &>/dev/null
-}
-
-################################################################################
-
 # update wallet data
 update_wallet_data() {
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
@@ -80,9 +73,21 @@ fi
 
 ################################################################################
 
+# pidof wart-node
+pidofwart_node() {
+  echo "$(pidof wart-node 2>/dev/null)" >/tmp/pdown.tmp
+}
+
+# remove old files
+pidofwart_remove() {
+  rm /tmp/pdown.tmp &>/dev/null
+}
+
+################################################################################
+
 # if missing
 if [[ ! -f /tmp/pdown.tmp ]] &>/dev/null; then
-  echo "$(pidof wart-node 2>/dev/null)" >/tmp/pdown.tmp
+  pidofwart_node
 fi
 
 # pid age
@@ -90,7 +95,8 @@ PIDOF_WART_NODE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null)))
 
 # if old enough
 if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
-  remove_pid_temp
+  pidofwart_remove
+  pidofwart_node
 fi
 
 ################################################################################
@@ -141,7 +147,7 @@ else
 fi
 # if zero
 if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
-  remove_pid_temp
+  pidofwart_remove
 fi
 
 ################################################################################
@@ -235,8 +241,9 @@ case $CHOICE in
 "1")
   # if zero
   if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    remove_pid_temp
+    pidofwart_remove
     sudo service wart-node start
+    pidofwart_node
   else
     printf '%b' "[${P1}OK${N0}] Node is running!\n"
     sleep 1
@@ -245,7 +252,7 @@ case $CHOICE in
 "2")
   # if any data
   if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    remove_pid_temp
+    pidofwart_remove
     # stop wart-node
     sudo service wart-node stop
   else
@@ -256,9 +263,10 @@ case $CHOICE in
 "3")
   # if any data
   if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    remove_pid_temp
+    pidofwart_remove
     # stop wart-node
     sudo service wart-node restart
+    pidofwart_node
   else
     printf '%b' "[${P1}OK${N0}] Node is not running!\n"
     sleep 1
