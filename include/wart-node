@@ -42,11 +42,11 @@ fi
 
 # system date
 DATE="$(date '+%s' 2>/dev/null)"
-# wallet peers
+# wallet peers age
 WALLET_PEERS="$(("$DATE" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))"
-# wallet banned peers
+# wallet banned peers age
 WALLET_BANNED="$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))"
-# wallet head
+# wallet head age
 WALLET_HEAD="$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))"
 
 # of missing, if old enough
@@ -80,7 +80,14 @@ fi
 
 ################################################################################
 
+# if missing
+if [[ ! -f /tmp/pdown.tmp ]] &>/dev/null; then
+  echo "$(pidof wart-node 2>/dev/null)" >/tmp/pdown.tmp
+fi
+
+# pid age
 PIDOF_WART_NODE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null)))
+
 # if old enough
 if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
   remove_pid_temp
@@ -104,19 +111,14 @@ if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
   update_version_data
 fi
 
+# release age
 LATEST_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null)))
+# installed age
 INSTALLED_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null)))
 
 # if old enough
 if [[ "$LATEST_RELEASE_AGE" -gt "3600" || "$INSTALLED_RELEASE_AGE" -gt "3600" ]] &>/dev/null; then
   update_version_data
-fi
-
-################################################################################
-
-# if missing
-if [[ ! -f /tmp/pdown.tmp ]] &>/dev/null; then
-  echo "$(pidof wart-node 2>/dev/null)" >/tmp/pdown.tmp
 fi
 
 ################################################################################
