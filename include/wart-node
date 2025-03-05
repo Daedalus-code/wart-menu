@@ -95,7 +95,6 @@ PIDOF_WART_NODE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/pdown.tmp 2>/dev/null)))
 
 # if old enough
 if [[ "$PIDOF_WART_NODE_AGE" -gt "300" ]] &>/dev/null; then
-  pidofwart_remove
   pidofwart_node
 fi
 
@@ -241,7 +240,6 @@ case $CHOICE in
 "1")
   # if zero
   if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    pidofwart_remove
     sudo service wart-node start
     pidofwart_node
   else
@@ -263,7 +261,6 @@ case $CHOICE in
 "3")
   # if any data
   if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
-    pidofwart_remove
     # stop wart-node
     sudo service wart-node restart
     pidofwart_node
