@@ -28,25 +28,29 @@ remove_pid_temp() {
 
 ################################################################################
 
-# system date
-DATE="$(date +%s)"
-# wallet peers
-WALLET_PEERS=$(("$DATE" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))
-# wallet banned peers
-WALLET_BANNED=$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))
-# wallet head
-WALLET_HEAD=$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))
-
-# of missing, if old enough
-if [[ ! -f /tmp/wprs.tmp ||
-  "$WALLET_PEERS" -gt "60" ||
-  ! -f /tmp/wbnd.tmp ||
-  "$WALLET_BANNED" -gt "90" ||
-  ! -f /tmp/whd.tmp ||
-  "$WALLET_HEAD" -gt "120" ]] &>/dev/null; then
+update_wallet_data() {
   echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
   echo "$(curl -s "$WARTHOG_API"/peers/banned 2>/dev/null | egrep -c "[0-9]+")" >/tmp/wbnd.tmp
   echo "$(curl -s "$WARTHOG_API"/chain/head 2>/dev/null)" >/tmp/whd.tmp
+}
+
+# if missing
+if [[ ! -f /tmp/wprs.tmp || ! -f /tmp/wbnd.tmp || ! -f /tmp/whd.tmp ]] &>/dev/null; then
+  update_wallet_data
+fi
+
+# system date
+DATE="$(date '+%s' 2>/dev/null)"
+# wallet peers
+WALLET_PEERS="$(("$DATE" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))"
+# wallet banned peers
+WALLET_BANNED="$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))"
+# wallet head
+WALLET_HEAD="$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))"
+
+# of missing, if old enough
+if [[ "$WALLET_PEERS" -gt "60" || "$WALLET_BANNED" -gt "90" || "$WALLET_HEAD" -gt "120" ]] &>/dev/null; then
+  update_wallet_data
 fi
 
 # wallet peers
