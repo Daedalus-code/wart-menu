@@ -102,7 +102,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
         wget https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-11.4.0.tar.gz
       fi
       # if missing directory
-      if [[ ! -d /root/gcc-11.4.0 ]] &>/dev/null; then
+      if [[ ! -d /root/gcc-releases-gcc-11.4.0 ]] &>/dev/null; then
         tar -xvf gcc-11.4.0.tar.gz
       fi
       cd gcc-releases-gcc-11.4.0
