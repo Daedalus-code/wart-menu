@@ -103,7 +103,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       fi
       # if missing directory
       if [[ ! -d /root/gcc-11_11.2.0-19ubuntu1.debian ]] &>/dev/null; then
-        tar -xzvf gcc-11_11.2.0-19ubuntu1.debian.tar.xz
+        tar -xf gcc-11_11.2.0-19ubuntu1.debian.tar.xz
       fi
       cd gcc-11_11.2.0-19ubuntu1.debian
       # download prerequisites
