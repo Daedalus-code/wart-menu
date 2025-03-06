@@ -106,7 +106,7 @@ iwconfig_result() {
   RESULT="$(iwconfig 2>/dev/null)"
   # if zero
   if [[ -z "$RESULT" ]] &>/dev/null; then
-    RESULT="No wifi"
+    RESULT="No wifi found"
   fi
   dialog --title "Wireless network" \
     --no-collapse \
