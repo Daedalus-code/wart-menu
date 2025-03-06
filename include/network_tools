@@ -114,8 +114,8 @@ TITLE="Network options"
 MENU=""
 
 OPTIONS=(
-  1 "Network          Edit configs"
-  2 "Ethernet         Configuration"
+  1 "Configuration    Netplan"
+  2 "Interface        Ifconfig"
   3 "Wireless         Configuration"
   4 "Data             Net Usage"
 )
@@ -159,16 +159,18 @@ case $CHOICE in
 
 # wireless #####################################################################
 "3")
-  HEIGHT="8"
-  WIDTH="36"
-  CHOICE_HEIGHT="2"
+  HEIGHT="10"
+  WIDTH="37"
+  CHOICE_HEIGHT="4"
   BACKTITLE="Network-Tools"
   TITLE="Wireless options"
   MENU=""
 
   OPTIONS=(
-    1 "Wireless         iwconfig"
-    2 "Scan             Networks"
+    1 "Wireless         Iwconfig"
+    2 "On               Radio on"
+    3 "Off              Radio off"
+    0 "Scan             Networks"
   )
 
   CHOICE=$(dialog --clear \
@@ -182,7 +184,19 @@ case $CHOICE in
   clear
   case $CHOICE in
   "1") iwconfig_result ;; # wireless iwconfig
-  "2") wireless_menu ;;   # wireless menu
+    # turn wifi on
+  "2")
+    sudo nmcli radio wifi on
+    ;;
+    # turn wifi off
+  "3")
+    if dialog --stdout --title "Turning off wireless!" \
+      --backtitle "Turn off wireless radio?" \
+      --yesno "Yes: Turn off! No: Go Back!" 5 32; then
+      sudo nmcli radio wifi off
+    fi
+    ;;
+  "0") wireless_menu ;; # wireless menu
   esac
   ;;
 "4") data_usage ;; # data usage
