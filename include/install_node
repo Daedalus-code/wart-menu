@@ -79,15 +79,6 @@ fi
 # install check
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
-  # check available core(s)
-  echo "$(mpstat -P ALL)" >/tmp/mpst.tmp
-  # cpu core count
-  CPU_CORES="$(cat /tmp/mpst.tmp 2>/dev/null | egrep -o "([0-9]+ CPU)" | awk '{ print $1 }')"
-  # cpu cores with more than 50% in idle (available for building)
-  CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
-  # output found cores
-  echo "Found $CPU_CORES Core(s)! Have $CPU_CORES_AVAILABLE Core(s) available."
-
   # if not installed
   if ! [ -x "$(command -v gcc-11)" ] &>/dev/null; then
     cd || exit
@@ -96,6 +87,14 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       --backtitle "Build Make Install" \
       --yesno "Build gcc-11? (required)" 5 28; then
       clear
+      # check available core(s)
+      echo "$(mpstat -P ALL)" >/tmp/mpst.tmp
+      # cpu core count
+      CPU_CORES="$(cat /tmp/mpst.tmp 2>/dev/null | egrep -o "([0-9]+ CPU)" | awk '{ print $1 }')"
+      # cpu cores with more than 50% in idle (available for building)
+      CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
+      # output found cores
+      echo "Found $CPU_CORES Core(s)! Have $CPU_CORES_AVAILABLE Core(s) available."
       sudo apt install gcc g++ make bison binutils gcc-multilib xz-utils -y
       # if missing tar
       if [[ ! -f /root/gcc-11.4.0.tar.gz ]] &>/dev/null; then
