@@ -217,6 +217,8 @@ last_tx() {
   RESULT="$(curl -s "$WARTHOG_API"/account/"$WARTHOG_ADDRESS"/history/99999999 2>/dev/null | tr -d ',"' | egrep -w "amount:|toAddress:|fromAddress:|txHash:|fee:|{" | tr -d '{' | egrep -v "data:|transactions:" | tr -d '       ' | cat -s)"
   # count
   COUNT="$(echo "$RESULT" | grep -c "amount")"
+  # max lines
+  RESULT="$(echo "$RESULT" | head -250)"
   # display function
   display_result() {
     dialog --title "Last transactions +$COUNT" \
