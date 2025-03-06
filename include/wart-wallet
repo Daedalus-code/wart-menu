@@ -221,7 +221,7 @@ last_tx() {
   display_result() {
     dialog --title "Last transactions +$COUNT" \
       --no-collapse \
-      --msgbox "$RESULT" 41 77
+      --msgbox "$RESULT" 40 77
   }
   display_result
 }
