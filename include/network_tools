@@ -103,9 +103,14 @@ ifconfig_result() {
 
 # display function
 iwconfig_result() {
+  RESULT="$(iwconfig 2>/dev/null)"
+  # if zero
+  if [[ -z "$RESULT" ]] &>/dev/null; then
+    RESULT="No wifi"
+  fi
   dialog --title "Wireless network" \
     --no-collapse \
-    --msgbox "$(iwconfig 2>/dev/null)" 0 0
+    --msgbox "$RESULT" 0 0
 }
 
 # menu #########################################################################
