@@ -209,10 +209,27 @@ print_help() {
   display_result
 }
 
+# function for last transactions ###############################################
+last_tx() {
+  # address
+  WARTHOG_ADDRESS="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -a 2>/dev/null)"
+  # last tx
+  RESULT="$(curl -s "$WARTHOG_API"/account/"$WARTHOG_ADDRESS"/history/99999999 2>/dev/null | tr -d ',"' | egrep -w "amount:|toAddress:|fromAddress:|txHash:|fee:|{" | tr -d '{' | egrep -v "data:|transactions:" | tr -d '       ' | cat -s)"
+  # count
+  COUNT="$(echo "$RESULT" | grep -c "amount")"
+  # display function
+  display_result() {
+    dialog --title "Last transactions +$COUNT" \
+      --no-collapse \
+      --msgbox "$RESULT" 42 80
+  }
+  display_result
+}
+
 # menu #########################################################################
-HEIGHT="14"
-WIDTH="28"
-CHOICE_HEIGHT="14"
+HEIGHT="15"
+WIDTH="27"
+CHOICE_HEIGHT="15"
 BACKTITLE="Wallet"
 TITLE="Wart-Wallet"
 MENU="Load: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
@@ -220,11 +237,12 @@ MENU="Load: $(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
 OPTIONS=(
   1 "Wallet balance"
   2 "Wallet address"
-  3 "Send transaction"
-  4 "Wallet files"
-  5 "Create wallet"
-  6 "Restore wallet"
-  7 "Help")
+  3 "Send"
+  4 "Last TX"
+  5 "Wallet files"
+  6 "Create wallet"
+  7 "Restore wallet"
+  8 "Help")
 
 CHOICE=$(dialog --clear \
   --backtitle "$BACKTITLE" \
@@ -239,10 +257,11 @@ case $CHOICE in
 "1") print_balance ;;  # print wallet balance
 "2") print_address ;;  # print wallet address
 "3") send_tx ;;        # send transaction
-"4") wallet_files ;;   # wallet files
-"5") create_wallet ;;  # create new wallet
-"6") restore_wallet ;; # restore old wallet
-"7") print_help ;;     # print help commands
+"4") last_tx ;;        # last transaction
+"5") wallet_files ;;   # wallet files
+"6") create_wallet ;;  # create new wallet
+"7") restore_wallet ;; # restore old wallet
+"8") print_help ;;     # print help commands
 "*") break ;;
 esac
 
