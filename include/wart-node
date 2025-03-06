@@ -64,7 +64,7 @@ fi
 if [[ "$WALLET_SYNCED" == "true" ]] &>/dev/null; then
   WALLET_SYNCED="OK"
 else
-  WALLET_SYNCED="..."
+  WALLET_SYNCED="0%"
 fi
 # if zero
 if [[ -z "$WALLET_HEIGHT" ]] &>/dev/null; then
@@ -134,6 +134,10 @@ LATEST_RELEASE="$(cat /tmp/ltrwr.tmp 2>/dev/null)"
 INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
 # does not copy
 if [[ "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
+  # if zero
+  if [[ -z "$LATEST_RELEASE" ]] &>/dev/null; then
+    LATEST_RELEASE=" Not found"
+  fi
   NEW_RELEASE="-> v$LATEST_RELEASE!"
 else
   NEW_RELEASE="OK"
