@@ -115,7 +115,7 @@ MENU=""
 
 OPTIONS=(
   1 "Configuration    Netplan"
-  2 "Interface        Ifconfig"
+  2 "Interface        ifconfig"
   3 "Wireless         Configuration"
   4 "Data             Net Usage"
 )
@@ -167,7 +167,7 @@ case $CHOICE in
   MENU=""
 
   OPTIONS=(
-    1 "Wireless         Iwconfig"
+    1 "Wireless         iwconfig"
     2 "On               Radio on"
     3 "Off              Radio off"
     0 "Scan             Networks"
