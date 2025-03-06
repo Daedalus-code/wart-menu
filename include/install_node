@@ -99,12 +99,17 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       ./contrib/download_prerequisites
       # if still gcc-11 missing, software-properties-common missing
       if [[ ! -x "$(command -v gcc-11)" || ! -x "$(command -v software-properties-common)" ]] &>/dev/null; then
-        sudo apt install software-properties-common -y
         echo "Did not work.."
         sleep 1
-        echo "Trying repository.."
+        echo "Trying repository..?"
+        sudo apt-get install software-properties-common -y
         sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa -y
-        sudo apt update && sudo apt install g++-11 gcc-11 -y
+        sudo apt-get update && sudo apt-get install g++-11 gcc-11 -y
+        if dialog --stdout --title "System needs to reboot.." \
+          --backtitle "Reboot system" \
+          --yesno "System reboot? (required)" 5 30; then
+          sudo reboot
+        fi
       fi
       # create build directory
       mkdir build
@@ -126,9 +131,9 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   ##############################################################################
 
   # update system
-  sudo apt update
-  sudo apt install git -y
-  sudo apt install build-essential meson ninja-build -y
+  sudo apt-get update
+  sudo apt-get install git -y
+  sudo apt-get install build-essential meson ninja-build -y
   # git clone
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
