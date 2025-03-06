@@ -78,10 +78,11 @@ fi
 
 # install check
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
+  clear
   # if gcc-11 not installed
   if ! [ -x "$(command -v gcc-11)" ] &>/dev/null; then
     cd || exit
-    # build gcc11
+    # build gcc-11
     if dialog --stdout --title "Building gcc-11" \
       --backtitle "Build Make Install" \
       --yesno "Build gcc-11? (required)" 5 28; then
@@ -109,7 +110,8 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
     fi
   fi
 
-  clear
+  ##############################################################################
+
   # update system
   sudo apt update
   sudo apt install git -y
