@@ -88,7 +88,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   # output found cores
   echo "Found $CPU_CORES Core(s)! Have $CPU_CORES_AVAILABLE Core(s) available."
 
-  # if gcc-11 not installed
+  # if not installed
   if ! [ -x "$(command -v gcc-11)" ] &>/dev/null; then
     cd || exit
     # build gcc-11
@@ -121,8 +121,21 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   # update system
   sudo apt-get update
-  sudo apt-get install git -y
-  sudo apt-get install build-essential meson ninja-build -y
+
+  # if not installed
+  if ! [ -x "$(command -v git)" ] &>/dev/null; then
+    sudo apt-get install git -y
+  fi
+
+  # if not installed
+  if ! [ -x "$(command -v build-essential)" ] &>/dev/null; then
+    if ! [ -x "$(command -v meson)" ] &>/dev/null; then
+      if ! [ -x "$(command -v mesninja-buildon)" ] &>/dev/null; then
+        sudo apt-get install build-essential meson ninja-build -y
+      fi
+    fi
+  fi
+
   # git clone
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
