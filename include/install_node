@@ -78,6 +78,16 @@ fi
 
 # install check
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
+
+  # check available core(s)
+  echo "$(mpstat -P ALL)" >/tmp/mpst.tmp
+  # cpu core count
+  CPU_CORES="$(cat /tmp/mpst.tmp 2>/dev/null | egrep -o "([0-9]+ CPU)" | awk '{ print $1 }')"
+  # cpu cores with more than 50% in idle (available for building)
+  CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
+  # output found cores
+  echo "Found $CPU_CORES Core(s)! Have $CPU_CORES_AVAILABLE Core(s) available."
+
   # if gcc-11 not installed
   if ! [ -x "$(command -v gcc-11)" ] &>/dev/null; then
     cd || exit
@@ -102,14 +112,6 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       mkdir build
       # change directory
       cd build
-      # check available core(s)
-      echo "$(mpstat -P ALL)" >/tmp/mpst.tmp
-      # cpu core count
-      CPU_CORES="$(cat /tmp/mpst.tmp 2>/dev/null | egrep -o "([0-9]+ CPU)" | awk '{ print $1 }')"
-      # cpu cores with more than 50% in idle (available for building)
-      CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
-      # output found cores
-      echo "Found $CPU_CORES Core(s)! Have $CPU_CORES_AVAILABLE Core(s) available."
       # configure, make, make install
       ../configure --enable-multilib && make -j"$CPU_CORES_AVAILABLE" && sudo make install
     fi
@@ -164,16 +166,14 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   # start counting (seconds)
   START="$SECONDS"
-  # ninja -j threads
-  NINJA_THREADS="$(echo "$(cat /proc/cpuinfo 2>/dev/null | grep -c "processor")-1" | bc 2>/dev/null)"
   # ninja -j"minus one thread"
-  ninja -j"$NINJA_THREADS"
+  ninja -j"$CPU_CORES_AVAILABLE"
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
 
-  read -r -p "Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP
+  read -r -p "Build time: $TIMER_FORMATTED with $CPU_CORES_AVAILABLE Core(s) $CPU_TEMP
 Press Enter to continue" </dev/tty
 fi
 
