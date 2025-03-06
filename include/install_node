@@ -105,7 +105,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       if [[ ! -d /root/gcc-11.4.0 ]] &>/dev/null; then
         tar -xvf gcc-11.4.0.tar.gz
       fi
-      cd gcc-11.4.0
+      cd gcc-releases-gcc-11.4.0
       # download prerequisites
       ./contrib/download_prerequisites
       # create build directory
