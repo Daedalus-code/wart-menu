@@ -19,7 +19,7 @@ wireless_menu() {
   WIFI_LIST=$(nmcli -t -f SSID,SIGNAL,BARS,SECURITY dev wifi list)
   # check if any wifi networks are found
   if [ -z "$WIFI_LIST" ] &>/dev/null; then
-    dialog --msgbox "No Wi-Fi networks found!" 6 40
+    dialog --msgbox "No Wi-Fi networks found!" 5 28
     exit 1
   fi
   # create a formatted menu for dialog
