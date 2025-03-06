@@ -7,10 +7,13 @@ source /etc/wart-menu/include/data_usage
 
 ################################################################################
 
-# if missing
-if ! [ -x "$(command -v nmcli)" ] &>/dev/null; then
-  # install missing
-  sudo apt-get install network-manager
+# if not hive
+if [[ ! -d /hive/ ]] &>/dev/null; then
+  # if missing
+  if ! [ -x "$(command -v nmcli)" ] &>/dev/null; then
+    # install missing
+    sudo apt-get install network-manager -y
+  fi
 fi
 
 # function to display the network menu #########################################
