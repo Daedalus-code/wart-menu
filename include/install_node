@@ -96,7 +96,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       --backtitle "Build Make Install" \
       --yesno "Build gcc-11? (required)" 5 28; then
       clear
-      sudo apt install gcc g++ make bison binutils gcc-multilib -y
+      sudo apt install gcc g++ make bison binutils gcc-multilib xz-utils -y
       # if missing tar
       if [[ ! -f /root/gcc-11_11.2.0-19ubuntu1.debian.tar.xz ]] &>/dev/null; then
         wget http://mirrors.edge.kernel.org/ubuntu/pool/main/g/gcc-11/gcc-11_11.2.0-19ubuntu1.debian.tar.xz
