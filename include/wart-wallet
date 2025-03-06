@@ -245,8 +245,8 @@ last_tx() {
   RESULT="$(echo "$RESULT" | head -250)"
   # default
   TITLE="Transactions +$COUNT"
-  WIDTH="40"
-  LENGTH="77"
+  WIDTH="77"
+  LENGTH="40"
   # if zero
   if_zero
   # display function
