@@ -11,6 +11,7 @@ source /etc/wart-menu/include/data_usage
 if [[ ! -d /hive/ ]] &>/dev/null; then
   # if missing
   if ! [ -x "$(command -v nmcli)" ] &>/dev/null; then
+    clear
     # install missing
     sudo apt-get install network-manager -y
   fi

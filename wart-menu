@@ -46,6 +46,7 @@ RESULT="${N0}[$(date)]${N0} ${BL}[INFO]${N0} ${P1}Wart-Menu v$MENU_VERSION${N0}
 if [[ ! -f /tmp/dii.tmp ]] &>/dev/null; then
   # if not installed
   if ! [ -x "$(command -v dialog)" ] &>/dev/null; then
+    clear
     sudo apt-get install dialog -y
   else
     touch /tmp/dii.tmp

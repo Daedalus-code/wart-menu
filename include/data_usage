@@ -3,6 +3,7 @@
 data_usage() {
   # if not installed
   if ! [ -x "$(command -v ifconfig)" ] &>/dev/null; then
+    clear
     sudo apt-get install net-tools -y
   fi
   # fetch current ifconfig data

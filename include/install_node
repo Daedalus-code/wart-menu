@@ -82,8 +82,8 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   clear
   # update system
   sudo apt update
-  sudo apt install git
-  sudo apt install build-essential meson ninja-build
+  sudo apt install git -y
+  sudo apt install build-essential meson ninja-build -y
   # git clone
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
