@@ -98,7 +98,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       # download prerequisites
       ./contrib/download_prerequisites
       # if still gcc-11 missing, software-properties-common missing
-      if ! [ -x "$(command -v gcc-11)" || -x "$(command -v software-properties-common)" ] &>/dev/null; then
+      if [[ ! -x "$(command -v gcc-11)" || ! -x "$(command -v software-properties-common)" ]] &>/dev/null; then
         sudo apt install software-properties-common -y
         echo "Did not work.."
         sleep 1
