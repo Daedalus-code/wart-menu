@@ -97,7 +97,17 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       cd gcc-11.1.0
       # download prerequisites
       ./contrib/download_prerequisites
+      # if still gcc-11 missing
+      if ! [ -x "$(command -v gcc-11)" ] &>/dev/null; then
+        echo "Did not work.."
+        sleep 1
+        echo "Trying repository.."
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa -y
+        sudo apt update && sudo apt install g++-11 gcc-11 -y
+      fi
+      # create build directory
       mkdir build
+      # change directory
       cd build
       # check available core(s)
       echo "$(mpstat -P ALL)" >/tmp/mpst.tmp
