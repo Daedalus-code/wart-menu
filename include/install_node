@@ -102,10 +102,10 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
         wget http://mirrors.edge.kernel.org/ubuntu/pool/main/g/gcc-11/gcc-11_11.2.0-19ubuntu1.debian.tar.xz
       fi
       # if missing directory
-      if [[ ! -d /root/gcc-11_11.2.0-19ubuntu1.debian ]] &>/dev/null; then
-        tar -xf gcc-11_11.2.0-19ubuntu1.debian.tar.xz
+      if [[ ! -d /root/debian ]] &>/dev/null; then
+        tar -xvf gcc-11_11.2.0-19ubuntu1.debian.tar.xz
       fi
-      cd gcc-11_11.2.0-19ubuntu1.debian
+      cd debian
       # download prerequisites
       ./contrib/download_prerequisites
       # create build directory
