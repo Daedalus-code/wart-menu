@@ -97,7 +97,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       cd gcc-11.1.0
       # download prerequisites
       ./contrib/download_prerequisites
-      sudo apt install gcc g++ make bison binutils gcc-multilib
+      sudo apt install gcc g++ make bison binutils gcc-multilib -y
       # create build directory
       mkdir build
       # change directory
