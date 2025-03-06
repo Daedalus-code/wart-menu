@@ -76,7 +76,7 @@ install_update() {
   # if hive bin
   if [[ -d /hive/bin/ ]] &>/dev/null; then
     # install wart-menu
-    sudo mv wart-menu /hive/bin/
+    sudo cp wart-menu /hive/bin/
     # fix ownership
     sudo chown -R "$(whoami)":"$(whoami)" /hive/bin/wart-menu
     # make executable
