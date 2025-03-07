@@ -151,6 +151,16 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   meson build --buildtype=release
   # change directory
   cd build || exit
+  # ninja -j"minus one thread"
+  ninja -j"$CPU_CORES_AVAILABLE"
+  # seconds since start
+  DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
+  # convert seconds
+  TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
+  # if zero
+  if [[ "$DURATION" -eq "0" ]] &>/dev/null; then
+    TIMER_FORMATTED="None"
+  fi
 
   ##############################################################################
 
@@ -183,17 +193,6 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   fi
 
   ##############################################################################
-
-  # ninja -j"minus one thread"
-  ninja -j"$CPU_CORES_AVAILABLE"
-  # seconds since start
-  DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
-  # convert seconds
-  TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
-  # if zero
-  if [[ "$DURATION" -eq "0" ]] &>/dev/null; then
-    TIMER_FORMATTED="None"
-  fi
 
   read -r -p "Build time: $TIMER_FORMATTED with $CPU_CORES_AVAILABLE Core(s) $CPU_TEMP
 Press Enter to continue" </dev/tty
