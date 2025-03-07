@@ -129,11 +129,13 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   # update system
   sudo apt-get update
   # install
-  sudo apt-get install git build-essential meson ninja-build -y
+  sudo apt-get install pip git build-essential meson ninja-build -y
   # git clone
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
   cd Warthog
+  # upgrade meson
+  pip install --upgrade meson
   # build
   meson build --buildtype=release
   # change directory
