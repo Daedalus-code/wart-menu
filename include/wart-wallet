@@ -182,7 +182,7 @@ print_help() {
   # wallet help
   dialog --title "Wallet help" \
     --no-collapse \
-    --msgbox "$RESULT" "$LENGTH" "$WIDTH"
+    --msgbox "$RESULT" 0 0
 }
 
 # function for last transactions ###############################################
