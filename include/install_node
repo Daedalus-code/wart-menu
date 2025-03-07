@@ -187,9 +187,9 @@ fi
 
 ################################################################################
 
-if [[ "$(pidof wart-node | wc -l)" -eq "0" ]]; then
+# start node
+if [[ "$(pidof wart-node | wc -l)" -eq "0" ]] &>/dev/null; then
   # start node
-  printf '%b' "[${G1}OK${N0}] Restarting wart-node..\n"
   sudo service wart-node start
 fi
 
