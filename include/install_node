@@ -139,13 +139,9 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   # ninja -j"minus one thread"
   ninja -j"$CPU_CORES_AVAILABLE"
 
-  if [[ -f /usr/local/lib64/libstdc++.so.6 ]] &>/dev/null; then
-    # backup (move)
-    sudo mv /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.bak
-    # point system to the updated libstdc++.so.6 from GCC 11.2.0
-    sudo ln -s /usr/local/lib64/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6
-    # update the dynamic linker cache
-    sudo ldconfig
+  if [[ -f /lib/x86_64-linux-gnu/libstdc++.so.6 ]] &>/dev/null; then
+    sudo mv /lib/x86_64-linux-gnu/libstdc++.so.6 /lib/x86_64-linux-gnu/libstdc++.so.6.bak
+    sudo ln -s /usr/local/lib64/libstdc++.so.6 /lib/x86_64-linux-gnu/libstdc++.so.6
   fi
 
   # seconds since start
