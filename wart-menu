@@ -155,10 +155,9 @@ network_tools() {
 # function to display information ##############################################
 
 print_info() {
-  dialog --title "$BACKTITLE" \
+  dialog --title "Wart-Menu: v$MENU_VERSION" \
     --no-collapse \
-    --msgbox "         Wart-Menu: v$MENU_VERSION
-$(hostnamectl)" 0 0
+    --msgbox "$(hostnamectl)" 0 0
 }
 
 # main loop ####################################################################
