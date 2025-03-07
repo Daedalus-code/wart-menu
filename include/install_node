@@ -139,6 +139,16 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   # ninja -j"minus one thread"
   ninja -j"$CPU_CORES_AVAILABLE"
 
+  # if missing
+  if [[ ! -f /usr/lib/x86_64-linux-gnu/libstdc++.so.6.bak ]] &>/dev/null; then
+    # backup
+    sudo cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.bak
+    # point system to the updated libstdc++.so.6 from GCC 11.2.0
+    sudo ln -sf /usr/local/lib64/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+    # update the dynamic linker cache
+    sudo ldconfig
+  fi
+
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
