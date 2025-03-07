@@ -100,6 +100,9 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
       # output found cores
       printf '%b' "[${G1}OK${N0}] Found ${R1}$CPU_CORES${N0} Core(s)! Have ${G1}$CPU_CORES_AVAILABLE${N0} Core(s) available.\n"
+      # update system
+      sudo apt-get update
+      # install
       sudo apt install gcc g++ make bison binutils gcc-multilib xz-utils flex bzip2 -y
       # if missing tar
       if [[ ! -f /root/gcc-11.4.0.tar.gz ]] &>/dev/null; then
@@ -134,21 +137,8 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   # update system
   sudo apt-get update
-
-  # if not installed
-  if ! [ -x "$(command -v git)" ] &>/dev/null; then
-    sudo apt-get install git -y
-  fi
-
-  # if not installed
-  if ! [ -x "$(command -v build-essential)" ] &>/dev/null; then
-    if ! [ -x "$(command -v meson)" ] &>/dev/null; then
-      if ! [ -x "$(command -v mesninja-buildon)" ] &>/dev/null; then
-        sudo apt-get install build-essential meson ninja-build -y
-      fi
-    fi
-  fi
-
+  # install
+  sudo apt-get install git build-essential meson ninja-build -y
   # git clone
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
