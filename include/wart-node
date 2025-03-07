@@ -60,7 +60,18 @@ fi
 if [[ "$WALLET_SYNCED" == "true" && "$WALLET_HEIGHT" -gt "0" ]] &>/dev/null; then
   WALLET_SYNCED="OK"
 else
-  WALLET_SYNCED="0%"
+  # wallet sync percentage
+  WARTHOG_SERVICE="$(service wart-node status 2>/dev/null)"
+  WALLET_SYNC_NOW="$(echo "$WARTHOG_SERVICE" | awk -FSyncing '{ print $2 }' | tr -d '.)(a-z' | awk '{ print $1 }' | tail -1)"
+  WALLET_SYNC_HEIGHT="$(echo "$WARTHOG_SERVICE" | awk -FSyncing '{ print $2 }' | tr -d '.)(a-z' | awk '{ print $2 }' | tail -1)"
+  WALLET_SYNCED="$(echo "100/$WALLET_SYNC_HEIGHT*$WALLET_SYNC_NOW" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
+  # if any data
+  if [[ -n "$WALLET_SYNCED" ]] &>/dev/null; then
+    # default
+    WALLET_SYNCED="${WALLET_SYNCED}%"
+  else
+    WALLET_SYNCED="0%"
+  fi
 fi
 # if zero
 if [[ -z "$WALLET_HEIGHT" ]] &>/dev/null; then
