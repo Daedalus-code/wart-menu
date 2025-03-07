@@ -79,7 +79,9 @@ wireless_menu() {
 # ifconfig #####################################################################
 
 # display function
-ifconfig_result() {dialog --title "Interface network" --no-collapse --msgbox "$(ifconfig 2>/dev/null)" 0 0}
+ifconfig_result() {
+  dialog --title "Interface network" --no-collapse --msgbox "$(ifconfig 2>/dev/null)" 0 0
+}
 
 # iwconfig #####################################################################
 
