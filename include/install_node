@@ -78,6 +78,49 @@ fi
 
 # if missing
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
+
+  # check available core(s)
+  echo "$(mpstat -P ALL)" >/tmp/mpst.tmp
+  # cpu core count
+  CPU_CORES="$(cat /tmp/mpst.tmp 2>/dev/null | egrep -o "([0-9]+ CPU)" | awk '{ print $1 }')"
+  # cpu cores with more than 50% in idle (available for building)
+  CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
+
+  # gcc-11 or greater not installed ############################################
+  GCC_VERSION=$(gcc -dumpversion | cut -d. -f1)
+  # less than required
+  if [ "$GCC_VERSION" -lt "11" ]; then
+    # update and install necessary packages
+    sudo apt update
+    sudo apt install -y build-essential wget flex bison libgmp-dev libmpfr-dev libmpc-dev texinfo
+    # set GCC version
+    GCC_VERSION="11.2.0"
+    # create a directory for the GCC source and change to it
+    mkdir -p ~/gcc-build
+    cd ~/gcc-build
+    # download the GCC source code
+    wget https://ftp.gnu.org/gnu/gcc/gcc-"$GCC_VERSION"/gcc-"$GCC_VERSION".tar.gz
+    # extract the downloaded tarball
+    tar -xvzf gcc-"$GCC_VERSION".tar.gz
+    cd gcc-"$GCC_VERSION" || exit
+    # download prerequisites for the build
+    ./contrib/download_prerequisites
+    # create a build directory outside the source tree
+    cd ..
+    mkdir build-gcc
+    cd build-gcc || exit
+    # configure the GCC build
+    ../gcc-"$GCC_VERSION"/configure --prefix=/usr/local --enable-languages=c,c++ --disable-multilib
+    # compile GCC
+    make -j"$CPU_CORES_AVAILABLE"
+    # install GCC
+    sudo make install
+    # verify the installation
+    gcc --version
+  fi
+
+  ##############################################################################
+
   # start counting (seconds)
   START="$SECONDS"
   # update system
