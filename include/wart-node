@@ -279,7 +279,9 @@ Height..: $WALLET_HEIGHT"
     # port
     CONNECT_PORT="$(dialog --title "Port" --inputbox "Enter port:" 8 40 3>&1 1>&2 2>&3 3>&-)"
     # connect to peer
-    cd "$WARTHOG_DIR"/node && ./wart-node -C "$CONNECT_IP:$CONNECT_PORT"
+    dialog --title "Connecting $CONNECT_IP:$CONNECT_PORT" \
+      --no-collapse \
+      --msgbox "$(cd "$WARTHOG_DIR"/node && ./wart-node -C "$CONNECT_IP:$CONNECT_PORT")" 0 0
     sleep 1
     ;;
   "5")
