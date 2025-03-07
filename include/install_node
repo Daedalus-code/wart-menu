@@ -76,8 +76,15 @@ fi
 
 ################################################################################
 
-# if missing
+# if node missing
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
+
+  # start counting (seconds)
+  START="$SECONDS"
+
+  # update and install necessary packages
+  sudo apt-get update
+  sudo apt-get install bison build-essential flex git libgmp-dev libmpc-dev libmpfr-dev meson ninja-build pip texinfo wget -y
 
   # check available core(s)
   echo "$(mpstat -P ALL 2>/dev/null)" >/tmp/mpst.tmp
@@ -91,9 +98,6 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   GCC_VERSION=$(gcc -dumpversion | cut -d. -f1)
   # less than required
   if [ "$GCC_VERSION" -lt "11" ]; then
-    # update and install necessary packages
-    sudo apt update
-    sudo apt install -y build-essential wget flex bison libgmp-dev libmpfr-dev libmpc-dev texinfo
     # set gcc version
     GCC_VERSION="11.2.0"
     # create a directory for the gcc source and change to it
@@ -125,12 +129,6 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   ##############################################################################
 
-  # start counting (seconds)
-  START="$SECONDS"
-  # update system
-  sudo apt-get update
-  # install
-  sudo apt-get install pip git build-essential meson ninja-build -y
   # git clone
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
@@ -143,10 +141,13 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   cd build || exit
   # ninja -j"minus one thread"
   ninja -j"$CPU_CORES_AVAILABLE"
+
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
+
   # convert seconds
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
+
   # if zero
   if [[ "$DURATION" -eq "0" ]] &>/dev/null; then
     TIMER_FORMATTED="None"
