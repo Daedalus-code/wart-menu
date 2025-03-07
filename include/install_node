@@ -121,6 +121,10 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       printf '%b' "[${G1}OK${N0}] Configure..\n"
       # configure gcc for compilation
       ../gcc-releases-gcc-11.4.0/configure -v --build="$UNAME_P"-linux-gnu --host="$UNAME_P"-linux-gnu --target="$UNAME_P"-linux-gnu --prefix=/usr/local/gcc-11.4.0 --enable-checking=release --enable-languages=c,c++,fortran --disable-multilib --program-suffix=-11.4
+      # build gcc
+      make -j"$CPU_CORES_AVAILABLE"
+      # install compiled files
+      sudo make install-strip
       # download prerequisites
       ./contrib/download_prerequisites
       # create build directory
