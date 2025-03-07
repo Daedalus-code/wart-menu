@@ -11,6 +11,7 @@ source /etc/wart-menu/include/color
 if ! grep -q "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service ||
   ! grep -q "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service ||
   ! grep -q "$WARTHOG_API" /etc/systemd/system/wart-node.service; then
+  clear
   printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
   # remove old file
   sudo rm -f /etc/systemd/system/wart-node.service
@@ -20,6 +21,7 @@ fi
 if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
   # check if wart-node.service needs updating
   if ! grep -q "$WARTHOG_STRATUM" /etc/systemd/system/wart-node.service; then
+    clear
     printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
     # remove old file
     sudo rm -f /etc/systemd/system/wart-node.service
