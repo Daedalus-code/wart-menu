@@ -69,9 +69,6 @@ WantedBy=multi-user.target" >/tmp/wrnsrv.tmp
   sudo systemctl daemon-reload
   # remove old files
   rm /tmp/pdown.tmp &>/dev/null && rm /tmp/ltrwr.tmp &>/dev/null && rm /tmp/rnwr.tmp &>/dev/null
-  printf '%b' "[${G1}OK${N0}] Restarting wart-node..\n"
-  # start node
-  sudo service wart-node start
 fi
 
 ################################################################################
@@ -92,7 +89,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   CPU_CORES="$(cat /tmp/mpst.tmp 2>/dev/null | egrep -o "([0-9]+ CPU)" | awk '{ print $1 }')"
   # cpu cores with more than 50% in idle (available for building)
   CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
-  printf '%b' "Found ${CY}$CPU_CORES${N0} core(s) with ${G1}$CPU_CORES_AVAILABLE${N0} available for building."
+  printf '%b' "Found ${CY}$CPU_CORES${N0} core(s) with ${G1}$CPU_CORES_AVAILABLE${N0} available for building.\n"
 
   # gcc-11 or greater not installed ############################################
   GCC_VERSION=$(gcc -dumpversion | cut -d. -f1)
@@ -101,7 +98,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
     # set gcc version
     GCC_VERSION="11.2.0"
     # create a directory for the gcc source and change to it
-    mkdir -p ~/gcc-build
+    mkdir -p ~/gcc-build &>/dev/null
     cd ~/gcc-build
     # download the gcc source code
     wget https://ftp.gnu.org/gnu/gcc/gcc-"$GCC_VERSION"/gcc-"$GCC_VERSION".tar.gz
@@ -112,7 +109,7 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
     ./contrib/download_prerequisites
     # create a build directory outside the source tree
     cd ..
-    mkdir build-gcc
+    mkdir build-gcc &>/dev/null
     cd build-gcc || exit
     # configure the gcc build
     ../gcc-"$GCC_VERSION"/configure --prefix=/usr/local --enable-languages=c,c++ --disable-multilib
@@ -144,7 +141,6 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
-
   # convert seconds
   TIMER_FORMATTED=$(printf '%dh:%dm:%ds\n' $(("$DURATION/3600")) $(("$DURATION%3600/60")) $(("$DURATION%60")))
 
@@ -185,7 +181,16 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   ##############################################################################
 
   read -r -p "Build time: $TIMER_FORMATTED with $CPU_CORES_AVAILABLE Core(s) $CPU_TEMP
+
 Press Enter to continue" </dev/tty
+fi
+
+################################################################################
+
+if [[ "$(pidof wart-node | wc -l)" -eq "0" ]]; then
+  # start node
+  printf '%b' "[${G1}OK${N0}] Restarting wart-node..\n"
+  sudo service wart-node start
 fi
 
 # END
