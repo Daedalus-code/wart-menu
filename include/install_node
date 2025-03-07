@@ -16,6 +16,7 @@ if ! grep -q "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service ||
   printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
   # remove old file
   sudo rm -f /etc/systemd/system/wart-node.service
+  sleep 1
 fi
 
 # if any data
@@ -26,6 +27,7 @@ if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
     printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
     # remove old file
     sudo rm -f /etc/systemd/system/wart-node.service
+    sleep 1
   fi
 fi
 
