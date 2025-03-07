@@ -80,56 +80,6 @@ fi
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   # start counting (seconds)
   START="$SECONDS"
-  # if not installed
-  GCC_VERSION=$(gcc -dumpversion | cut -d. -f1)
-  # less than required
-  if [ "$GCC_VERSION" -lt "11" ]; then
-    printf '%b' "[${R1}!!${N0}] GCC version is less than 11!\n" && sleep 1
-    # change directory
-    cd || exit
-    # build gcc-11
-    if dialog --stdout --title "Building gcc-11" \
-      --backtitle "Build Make Install" \
-      --yesno "Build gcc-11? (required)" 5 28; then
-      clear
-      # check available core(s)
-      echo "$(mpstat -P ALL)" >/tmp/mpst.tmp
-      # cpu core count
-      CPU_CORES="$(cat /tmp/mpst.tmp 2>/dev/null | egrep -o "([0-9]+ CPU)" | awk '{ print $1 }')"
-      # cpu cores with more than 50% in idle (available for building)
-      CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
-      # output found cores
-      printf '%b' "[${G1}OK${N0}] Found ${R1}$CPU_CORES${N0} Core(s)! Have ${G1}$CPU_CORES_AVAILABLE${N0} Core(s) available.\n"
-      # update system
-      sudo apt-get update
-      # install
-      sudo apt install gcc g++ make bison binutils gcc-multilib xz-utils flex bzip2 -y
-      # if missing tar
-      if [[ ! -f /root/gcc-11.4.0.tar.gz ]] &>/dev/null; then
-        printf '%b' "[${G1}OK${N0}] Downloading gcc-11..\n"
-        wget https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-11.4.0.tar.gz
-      fi
-      # if missing directory
-      if [[ ! -d /root/gcc-releases-gcc-11.4.0 ]] &>/dev/null; then
-        printf '%b' "[${G1}OK${N0}] unzip gcc-11..\n"
-        tar -xvf gcc-11.4.0.tar.gz
-      fi
-      # change directory
-      cd gcc-releases-gcc-11.4.0
-      # x86_64, aarch64, ?
-      UNAME_P="$(uname -p 2>/dev/null)"
-      printf '%b' "[${G1}OK${N0}] Configure..\n"
-      # configure gcc for compilation
-      ../gcc-releases-gcc-11.4.0/configure -v --build="$UNAME_P"-linux-gnu --host="$UNAME_P"-linux-gnu --target="$UNAME_P"-linux-gnu --prefix=/usr/local/gcc-11.4.0 --enable-checking=release --enable-languages=c,c++,fortran --disable-multilib --program-suffix=-11.4
-      # build gcc
-      make -j"$CPU_CORES_AVAILABLE"
-      # install compiled files
-      sudo make install-strip
-    fi
-  fi
-
-  ##############################################################################
-
   # update system
   sudo apt-get update
   # install
@@ -138,20 +88,12 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
   cd Warthog
-  # download prerequisites
-  ./contrib/download_prerequisites
-  # create build directory
-  mkdir build &>/dev/null
-  # change directory
-  cd build || exit
   # build
   meson build --buildtype=release
-  printf '%b' "[${G1}OK${N0}] Configure.. & make -j${CPU_CORES_AVAILABLE}.. & make install..\n"
-  # configure, make, make install
-  ../configure --enable-multilib && make -j"$CPU_CORES_AVAILABLE" && sudo make install
+  # change directory
+  cd build || exit
   # ninja -j"minus one thread"
   ninja -j"$CPU_CORES_AVAILABLE"
-
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
