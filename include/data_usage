@@ -90,13 +90,7 @@ TX Yearly..: $YEARLY_USAGE_TX
 
 Uptime.....: $UPTIME_SYSTEM"
   WIDTH=$(echo "$(echo "$RESULT" | wc -L)+5" | bc 2>/dev/null)
-  # display results in a dialog box
-  display_result() {
-    dialog --title "Data Usage Statistics" \
-      --msgbox "$RESULT" 25 "$WIDTH"
-  }
-  # execute the display_result function
-  display_result 2>/dev/null
+  dialog --title "Data Usage Statistics" --msgbox "$RESULT" 25 "$WIDTH"
 }
 
 # END

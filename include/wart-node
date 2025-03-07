@@ -10,13 +10,7 @@ source /etc/wart-menu/include/install_node
 print_help() {
   # help
   RESULT="$("$WARTHOG_DIR"/node/./wart-node --help)"
-  # display function
-  display_result() {
-    dialog --title "$BACKTITLE" \
-      --no-collapse \
-      --msgbox "$RESULT" 0 0
-  }
-  display_result
+  dialog --title "$BACKTITLE" --no-collapse --msgbox "$RESULT" 0 0
 }
 
 ################################################################################
@@ -277,13 +271,7 @@ Height..: $WALLET_HEIGHT"
     fi
     ;;
   "4")
-    # display function
-    display_result() {
-      dialog --title "Wart-node.service status" \
-        --no-collapse \
-        --msgbox "$(service wart-node status)" 0 0
-    }
-    display_result
+    dialog --title "Wart-node.service status" --no-collapse --msgbox "$(service wart-node status)" 0 0
     ;;
   "5") sudo nano /etc/systemd/system/wart-node.service ;;
   "6")

@@ -61,13 +61,8 @@ print_balance() {
 Value : $WART_VALUE USD
 Price : $WART_PRICE USD"
   fi
-  # display function
-  display_result() {
-    dialog --title "Wallet balance" \
-      --no-collapse \
-      --msgbox "$(echo "$RESULT" | column -t)" "$HEIGHT" "$(echo "8+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
-  }
-  display_result
+  dialog --title "Wallet balance" --no-collapse \
+    --msgbox "$(echo "$RESULT" | column -t)" "$HEIGHT" "$(echo "8+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
 }
 
 # function to print wallet address #############################################
@@ -80,46 +75,24 @@ print_address() {
   else
     RESULT="Address: $RESULT"
   fi
-  # display function
-  display_result() {
-    dialog --title "Wallet Address" \
-      --no-collapse \
-      --msgbox "$RESULT" 5 "$(echo "4+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
-  }
-  display_result
+  # wallet address dialog
+  dialog --title "Wallet Address" --no-collapse \
+    --msgbox "$RESULT" 5 "$(echo "4+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
 }
 
 # function to send transaction #################################################
 send_tx() {
   # prompt user send transaction
-  if dialog --stdout --title "Send transaction?" \
-    --backtitle "Sending transaction!" \
+  if dialog --stdout --title "Send transaction?" --backtitle "Sending transaction!" \
     --yesno "Yes: Send! No: Go back!" 5 28; then
 
     # if node is running
     if [[ "$(pidof wart-node 2>/dev/null | wc -l)" -gt "0" ]] &>/dev/null; then
-      # input address
-      RECEIPENT_ADDRESS=$(
-        dialog --title "Address" \
-          --inputbox "Enter Address:" 8 40 \
-          3>&1 1>&2 2>&3 3>&-
-      )
-      # input amount
-      RECEIPENT_AMOUNT=$(
-        dialog --title "Amount" \
-          --inputbox "Enter Amount:" 8 40 \
-          3>&1 1>&2 2>&3 3>&-
-      ) # input fee
-      RECEIPENT_FEE=$(
-        dialog --title "FEE" \
-          --inputbox "Enter Fee:" 8 40 \
-          3>&1 1>&2 2>&3 3>&-
-      ) # input nonce
-      RECEIPENT_NONCE=$(
-        dialog --title "nonce" \
-          --inputbox "Enter nonce:" 8 40 \
-          3>&1 1>&2 2>&3 3>&-
-      )
+
+      RECEIPENT_ADDRESS=$(dialog --title "Address" --inputbox "Enter Address:" 8 40 3>&1 1>&2 2>&3 3>&-)
+      RECEIPENT_AMOUNT=$(dialog --title "Amount" --inputbox "Enter Amount:" 8 40 3>&1 1>&2 2>&3 3>&-)
+      RECEIPENT_FEE=$(dialog --title "FEE" --inputbox "Enter Fee:" 8 40 3>&1 1>&2 2>&3 3>&-)
+      RECEIPENT_NONCE=$(dialog --title "nonce" --inputbox "Enter nonce:" 8 40 3>&1 1>&2 2>&3 3>&-)
 
       # if zero
       if [[ -z "$RECEIPENT_ADDRESS" || -z "$RECEIPENT_AMOUNT" || -z "$RECEIPENT_FEE" ]] &>/dev/null; then
@@ -130,13 +103,9 @@ send_tx() {
     else
       RESULT="Node is not running!"
     fi
-    # display function
-    display_result() {
-      dialog --title "Send coins" \
-        --no-collapse \
-        --msgbox "$RESULT" 5 "$(echo "4+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
-    }
-    display_result
+    # send coins dialog
+    dialog --title "Send coins" --no-collapse \
+      --msgbox "$RESULT" 5 "$(echo "4+$(echo $RESULT | wc -L)" | bc 2>/dev/null)"
   fi
 }
 
@@ -155,48 +124,32 @@ wallet_files() {
   )"
   # if zero
   if_zero
-  # display function
-  display_result() {
-    dialog --title "Wallet files" \
-      --no-collapse \
-      --msgbox "$RESULT" "$LENGTH" "$WIDTH"
-  }
-  display_result
+  # wallet files dialog
+  dialog --title "Wallet files" --no-collapse --msgbox "$RESULT" "$LENGTH" "$WIDTH"
 }
 
 # function for create wallet ###################################################
 create_wallet() {
   # prompt user create new wallet
-  if dialog --stdout --title "Create new wallet?" \
-    --backtitle "Creating new wallet!" \
+  if dialog --stdout --title "Create new wallet?" --backtitle "Creating new wallet!" \
     --yesno "Yes: Create! No: Return!" 5 30; then
     # create wallet
     RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -c)"
     # if zero
     if_zero
-    # display function
-    display_result() {
-      dialog --title "Create wallet" \
-        --no-collapse \
-        --msgbox "$RESULT" "$LENGTH" "$WIDTH"
-    }
-    display_result
+    # create wallet dialog
+    dialog --title "Create wallet" --no-collapse --msgbox "$RESULT" "$LENGTH" "$WIDTH"
   fi
 }
 
 # function to restore wallet ###################################################
 restore_wallet() {
   # prompt user create new wallet
-  if dialog --stdout --title "Restore old wallet?" \
-    --backtitle "Restoring old wallet!" \
+  if dialog --stdout --title "Restore old wallet?" --backtitle "Restoring old wallet!" \
     --yesno "Yes: Restore! No: Return!" 5 30; then
 
     # input private key
-    PRIVATEKEY=$(
-      dialog --title "Privatekey" \
-        --inputbox "Enter privatekey:" 8 40 \
-        3>&1 1>&2 2>&3 3>&-
-    )
+    PRIVATEKEY=$(dialog --title "Privatekey" --inputbox "Enter privatekey:" 8 40 3>&1 1>&2 2>&3 3>&-)
 
     # if zero
     if [[ -z "$PRIVATEKEY" ]] &>/dev/null; then
@@ -208,13 +161,8 @@ restore_wallet() {
     RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -r --restore="$PRIVATEKEY")"
     # if zero
     if_zero
-    # display function
-    display_result() {
-      dialog --title "Restore wallet" \
-        --no-collapse \
-        --msgbox "$RESULT" "$LENGTH" "$WIDTH"
-    }
-    display_result
+    # restore wallet dialog
+    dialog --title "Restore wallet" --no-collapse --msgbox "$RESULT" "$LENGTH" "$WIDTH"
   fi
 }
 
@@ -224,13 +172,8 @@ print_help() {
   RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" --help)"
   # if zero
   if_zero
-  # display function
-  display_result() {
-    dialog --title "Wallet help" \
-      --no-collapse \
-      --msgbox "$RESULT" "$LENGTH" "$WIDTH"
-  }
-  display_result
+  # wallet help
+  dialog --title "Wallet help" --no-collapse --msgbox "$RESULT" "$LENGTH" "$WIDTH"
 }
 
 # function for last transactions ###############################################
@@ -249,13 +192,8 @@ last_tx() {
   LENGTH="40"
   # if zero
   if_zero
-  # display function
-  display_result() {
-    dialog --title "$TITLE" \
-      --no-collapse \
-      --msgbox "$RESULT" "$LENGTH" "$WIDTH"
-  }
-  display_result
+  # transactions dialog
+  dialog --title "$TITLE" --no-collapse --msgbox "$RESULT" "$LENGTH" "$WIDTH"
 }
 
 # menu #########################################################################
