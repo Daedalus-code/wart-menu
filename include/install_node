@@ -81,8 +81,10 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   # start counting (seconds)
   START="$SECONDS"
   # if not installed
-  if ! [ -x "$(command -v gcc-11)" ] &>/dev/null; then
-    printf '%b' "[${R1}!!${N0}] gcc-11 not installed!\n" && sleep 1
+  GCC_VERSION=$(gcc -dumpversion | cut -d. -f1)
+  # less than required
+  if [ "$GCC_VERSION" -lt "11" ]; then
+    printf '%b' "[${R1}!!${N0}] GCC version is less than 11!\n" && sleep 1
     # change directory
     cd || exit
     # build gcc-11
