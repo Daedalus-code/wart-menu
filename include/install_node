@@ -80,11 +80,12 @@ fi
 if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   # check available core(s)
-  echo "$(mpstat -P ALL)" >/tmp/mpst.tmp
+  echo "$(mpstat -P ALL 2>/dev/null)" >/tmp/mpst.tmp
   # cpu core count
   CPU_CORES="$(cat /tmp/mpst.tmp 2>/dev/null | egrep -o "([0-9]+ CPU)" | awk '{ print $1 }')"
   # cpu cores with more than 50% in idle (available for building)
   CPU_CORES_AVAILABLE="$(cat /tmp/mpst.tmp 2>/dev/null | awk 'NR > 4 && $NF > 50 {count++} END {print count}')"
+  printf '%b' "Found ${CY}$CPU_CORES${N0} core(s) with ${G1}$CPU_CORES_AVAILABLE${N0} available for building."
 
   # gcc-11 or greater not installed ############################################
   GCC_VERSION=$(gcc -dumpversion | cut -d. -f1)
