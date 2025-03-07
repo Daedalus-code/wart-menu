@@ -209,7 +209,7 @@ THERMAL_ZONE="$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null)"
 # if CPU temp exist
 if [[ -n "$THERMAL_ZONE" ]] &>/dev/null; then
   # calculate cpu temp
-  CPU_TEMP_CALCULATED="$(echo "$THERMAL_ZONE/1024" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
+  CPU_TEMP_CALCULATED="$(echo "$THERMAL_ZONE/1000" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
   # output cpu temp
   CPU_TEMP="- CPU: ${CPU_TEMP_CALCULATED}°C"
 else
