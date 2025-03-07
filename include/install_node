@@ -10,7 +10,8 @@ source /etc/wart-menu/include/color
 # check if wart-node.service needs updating
 if ! grep -q "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service ||
   ! grep -q "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service ||
-  ! grep -q "$WARTHOG_API" /etc/systemd/system/wart-node.service; then
+  ! grep -q "$WARTHOG_API" /etc/systemd/system/wart-node.service ||
+  ! grep -q "$WARTHOG_BIND" /etc/systemd/system/wart-node.service; then
   clear
   printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
   # remove old file
@@ -41,7 +42,7 @@ if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
   sleep 1
 
   # execStart
-  SERVICE_START="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
+  SERVICE_START="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --bind=$WARTHOG_BIND --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
   # if zero
   if [[ -z "$WARTHOG_STRATUM" ]] &>/dev/null; then
     # normal node
