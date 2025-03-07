@@ -56,19 +56,22 @@ wireless_menu() {
     SECURITY_TYPE=$(nmcli -t -f SSID,SECURITY dev wifi list | grep "^$SELECTED_NETWORK" | cut -d: -f2)
     # connect
     if [[ "$SECURITY_TYPE" == "--" || -z "$SECURITY_TYPE" ]] &>/dev/null; then
-      dialog --title "$SELECTED_NETWORK" --no-collapse \
+      dialog --title "$SELECTED_NETWORK" \
+        --no-collapse \
         --msgbox "$(sudo nmcli dev wifi connect "$SELECTED_NETWORK")"
     else
       # prompt for wi-fi password
       WIFI_PASSWORD=$(dialog --title "Wi-Fi Password" --passwordbox "Enter password for $SELECTED_NETWORK:" 8 42 2>&1 >/dev/tty)
       # clear screen
       clear
-      dialog --title "$SELECTED_NETWORK" --no-collapse \
+      dialog --title "$SELECTED_NETWORK" \
+        --no-collapse \
         --msgbox "$(sudo nmcli dev wifi connect "$SELECTED_NETWORK" password "$WIFI_PASSWORD")"
     fi
     ;;
   "2")
-    dialog --title "$SELECTED_NETWORK" --no-collapse \
+    dialog --title "$SELECTED_NETWORK" \
+      --no-collapse \
       --msgbox "$(sudo nmcli con down "$SELECTED_NETWORK")"
     ;;
   "0") break ;;
@@ -80,7 +83,9 @@ wireless_menu() {
 
 # display function
 ifconfig_result() {
-  dialog --title "Interface network" --no-collapse --msgbox "$(ifconfig 2>/dev/null)" 0 0
+  dialog --title "Interface network" \
+    --no-collapse \
+    --msgbox "$(ifconfig 2>/dev/null)" 0 0
 }
 
 # iwconfig #####################################################################
@@ -92,7 +97,9 @@ iwconfig_result() {
   if [[ -z "$RESULT" ]] &>/dev/null; then
     RESULT="No wifi found"
   fi
-  dialog --title "Wireless network" --no-collapse --msgbox "$RESULT" 0 0
+  dialog --title "Wireless network" \
+    --no-collapse \
+    --msgbox "$RESULT" 0 0
 }
 
 # menu #########################################################################
