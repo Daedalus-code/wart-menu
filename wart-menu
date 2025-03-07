@@ -157,7 +157,7 @@ network_tools() {
 print_info() {
   dialog --title "$BACKTITLE" \
     --no-collapse \
-    --msgbox "[INFO] Wart-Menu: v$MENU_VERSION
+    --msgbox "          Wart-Menu: v$MENU_VERSION
 $(hostnamectl)" 0 0
 }
 
