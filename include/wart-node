@@ -57,7 +57,7 @@ if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
   WALLET_PEERS="0"
 fi
 # if true
-if [[ "$WALLET_SYNCED" == "true" ]] &>/dev/null; then
+if [[ "$WALLET_SYNCED" == "true" && "$WALLET_HEIGHT" -gt "0" ]] &>/dev/null; then
   WALLET_SYNCED="OK"
 else
   WALLET_SYNCED="0%"
@@ -279,7 +279,7 @@ Height..: $WALLET_HEIGHT"
     # port
     CONNECT_PORT="$(dialog --title "Port" --inputbox "Enter port:" 8 40 3>&1 1>&2 2>&3 3>&-)"
     # connect to peer
-    dialog --title "Connecting $CONNECT_IP:$CONNECT_PORT" \
+    dialog --title "Connecting to $CONNECT_IP:$CONNECT_PORT" \
       --no-collapse \
       --msgbox "$(cd "$WARTHOG_DIR"/node && ./wart-node -C "$CONNECT_IP:$CONNECT_PORT")" 0 0
     sleep 1
