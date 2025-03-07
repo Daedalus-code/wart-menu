@@ -113,8 +113,8 @@ main_menu() {
     2 "Wallet           Warthog wallet" \
     3 "Logs             Check logs" \
     4 "Config           Menu config" \
-    5 "Network          Net-tools" \
-    6 "Update           Menu updates" \
+    5 "Update           Menu updates" \
+    6 "Network          Net-tools" \
     7 "info             Information" \
     0 "Exit             Quit menu" \
     2>&1 >/dev/tty
@@ -216,8 +216,8 @@ while true; do
     esac
     ;;
   "4") configuration ;; # configuration
-  "5") network_tools ;; # network tools
-  "6") menu_update ;;   # menu update
+  "5") menu_update ;;   # menu update
+  "6") network_tools ;; # network tools
   "7") print_info ;;    # print information
   "0") clear && exit ;; # exit menu
   "*") break ;;
