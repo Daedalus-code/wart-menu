@@ -125,15 +125,6 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
       make -j"$CPU_CORES_AVAILABLE"
       # install compiled files
       sudo make install-strip
-      # download prerequisites
-      ./contrib/download_prerequisites
-      # create build directory
-      mkdir build &>/dev/null
-      # change directory
-      cd build
-      printf '%b' "[${G1}OK${N0}] Configure.. & make -j${CPU_CORES_AVAILABLE}.. & make install..\n"
-      # configure, make, make install
-      ../configure --enable-multilib && make -j"$CPU_CORES_AVAILABLE" && sudo make install
     fi
   fi
 
@@ -147,12 +138,20 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
   cd || exit && git clone https://github.com/warthog-network/Warthog
   # change directory
   cd Warthog
-  # build
-  meson build --buildtype=release
+  # download prerequisites
+  ./contrib/download_prerequisites
+  # create build directory
+  mkdir build &>/dev/null
   # change directory
   cd build || exit
+  # build
+  meson build --buildtype=release
+  printf '%b' "[${G1}OK${N0}] Configure.. & make -j${CPU_CORES_AVAILABLE}.. & make install..\n"
+  # configure, make, make install
+  ../configure --enable-multilib && make -j"$CPU_CORES_AVAILABLE" && sudo make install
   # ninja -j"minus one thread"
   ninja -j"$CPU_CORES_AVAILABLE"
+
   # seconds since start
   DURATION=$(echo "$SECONDS-$START" 2>&1 | bc 2>&1)
   # convert seconds
