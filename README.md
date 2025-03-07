@@ -17,3 +17,4 @@ At your own risk, this was made for ease setup for warthog node and wallet.
 Please remember to backup PRIVATEKEY!  
 
 Warthog Discord: https://discord.gg/3d3Aq6BfaU  
+Warthog Github: https://github.com/warthog-network/Warthog  
