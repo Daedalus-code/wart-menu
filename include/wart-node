@@ -275,9 +275,9 @@ Height..: $WALLET_HEIGHT"
     ;;
   "4")
     # ip address
-    dialog --title "IP Address" --inputbox "Enter IP address:" 8 40 3>&1 1>&2 2>&3 3>&-
+    CONNECT_IP="$(dialog --title "IP Address" --inputbox "Enter IP address:" 8 40 3>&1 1>&2 2>&3 3>&-)"
     # port
-    dialog --title "Port" --inputbox "Enter port:" 8 40 3>&1 1>&2 2>&3 3>&-
+    CONNECT_PORT="$(dialog --title "Port" --inputbox "Enter port:" 8 40 3>&1 1>&2 2>&3 3>&-)"
     # connect to peer
     cd "$WARTHOG_DIR"/node && ./wart-node -C "$CONNECT_IP:$CONNECT_PORT"
     sleep 1
