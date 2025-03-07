@@ -115,6 +115,9 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
     make -j"$CPU_CORES_AVAILABLE"
     # install gcc
     sudo make install
+    # manually add it
+    sudo update-alternatives --install /usr/bin/gcc gcc /usr/local/bin/gcc 100
+    sudo update-alternatives --install /usr/bin/g++ g++ /usr/local/bin/g++ 100
     # verify the installation
     gcc --version
   fi
