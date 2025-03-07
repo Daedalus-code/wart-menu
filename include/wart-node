@@ -118,7 +118,7 @@ LATEST_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null)))
 INSTALLED_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null)))
 
 # if old enough
-if [[ "$LATEST_RELEASE_AGE" -gt "3600" || "$INSTALLED_RELEASE_AGE" -gt "3600" ]] &>/dev/null; then
+if [[ "$LATEST_RELEASE_AGE" -gt "300" || "$INSTALLED_RELEASE_AGE" -gt "300" ]] &>/dev/null; then
   update_version_data
 fi
 
@@ -218,18 +218,19 @@ Status..: $NODE_STATUS - Sync: $WALLET_SYNCED
 Peers...: $WALLET_PEERS - Banned: $WALLET_BANNED
 Version.: v$INSTALLED_RELEASE $NEW_RELEASE
 Height..: $WALLET_HEIGHT"
-  CHOICE_HEIGHT="7"
-  HEIGHT="20"
+  CHOICE_HEIGHT="8"
+  HEIGHT="13"
   WIDTH="46"
 
   OPTIONS=(
     1 "Start            Run wart-node"
     2 "Stop             Kill wart-node"
     3 "Restart          Restart wart-node"
-    4 "Status           Service status"
-    5 "Config           wart-node.service"
-    6 "Update           Update wart-node"
-    7 "Help")
+    4 "Connect          Connect peer"
+    5 "Status           Service status"
+    6 "Config           wart-node.service"
+    7 "Update           Update wart-node"
+    8 "Help")
 
   CHOICE=$(dialog --clear \
     --title "$TITLE" \
@@ -273,12 +274,21 @@ Height..: $WALLET_HEIGHT"
     fi
     ;;
   "4")
+    # ip address
+    dialog --title "IP Address" --inputbox "Enter IP address:" 8 40 3>&1 1>&2 2>&3 3>&-
+    # port
+    dialog --title "Port" --inputbox "Enter port:" 8 40 3>&1 1>&2 2>&3 3>&-
+    # connect to peer
+    cd "$WARTHOG_DIR"/node && ./wart-node -C "$CONNECT_IP:$CONNECT_PORT"
+    sleep 1
+    ;;
+  "5")
     dialog --title "Wart-node.service status" \
       --no-collapse \
       --msgbox "$(service wart-node status)" 0 0
     ;;
-  "5") sudo nano /etc/systemd/system/wart-node.service ;;
-  "6")
+  "6") sudo nano /etc/systemd/system/wart-node.service ;;
+  "7")
     # if any data
     if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
       # stop wart-node
@@ -297,7 +307,7 @@ Height..: $WALLET_HEIGHT"
     printf '%b' "[${G1}OK${N0}] Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP\n"
     read -r -p "[!?] Press Enter to continue" </dev/tty
     ;;
-  "7") print_help ;;
+  "8") print_help ;;
   esac
 fi
 
