@@ -63,7 +63,7 @@ Price : $WART_PRICE USD"
   fi
   dialog --title "Wallet balance" \
     --no-collapse \
-    --msgbox "$(echo "$RESULT" | column -t)" "$HEIGHT" "$(echo "9+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
+    --msgbox "$(echo "$RESULT" | column -t)" "$HEIGHT" "$(echo "10+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
 }
 
 # function to print wallet address #############################################
