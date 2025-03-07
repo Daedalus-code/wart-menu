@@ -95,16 +95,16 @@ send_tx() {
       RECEIPENT_AMOUNT=$(dialog --title "Amount" --inputbox "Enter Amount:" 8 40 3>&1 1>&2 2>&3 3>&-)
       RECEIPENT_FEE=$(dialog --title "FEE" --inputbox "Enter Fee:" 8 40 3>&1 1>&2 2>&3 3>&-)
       RECEIPENT_NONCE=$(dialog --title "nonce" --inputbox "Enter nonce:" 8 40 3>&1 1>&2 2>&3 3>&-)
+    fi
 
-      # if zero
-      if [[ -z "$RECEIPENT_ADDRESS" || -z "$RECEIPENT_AMOUNT" || -z "$RECEIPENT_FEE" ]] &>/dev/null; then
-        break
-      fi
+    # if zero
+    if [[ -z "$RECEIPENT_ADDRESS" || -z "$RECEIPENT_AMOUNT" || -z "$RECEIPENT_FEE" ]] &>/dev/null; then
+      RESULT="Node is not running!"
+    else
       # send
       RESULT="$("$WARTHOG_DIR"/wallet/./wart-wallet --file="$WARTHOG_JSON" -s --to="$RECEIPENT_ADDRESS" --amount="$RECEIPENT_AMOUNT" --fee="$RECEIPENT_FEE" --nonce="$RECEIPENT_NONCE")"
-    else
-      RESULT="Node is not running!"
     fi
+
     # send coins dialog
     dialog --title "Send coins" \
       --no-collapse \
