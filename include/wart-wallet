@@ -115,22 +115,20 @@ send_tx() {
 # function for wallet files ####################################################
 wallet_files() {
   RESULT="$(
-    echo "$(
-      ls -lRt "$WARTHOG_CHAIN"
-      ls -lRt "$WARTHOG_PEERS"
-      echo
-      ls -lRt "$WARTHOG_DIR"/wallet/
-      echo
-      ls -lRt "$WARTHOG_DIR"/node/
-      echo
-    )"
+    ls -lRt "$WARTHOG_CHAIN"
+    ls -lRt "$WARTHOG_PEERS"
+    echo
+    ls -lRt "$WARTHOG_DIR"/wallet/
+    echo
+    ls -lRt "$WARTHOG_DIR"/node/
+    echo
   )"
   # if zero
   if_zero
   # wallet files dialog
   dialog --title "Wallet files" \
     --no-collapse \
-    --msgbox "$RESULT" "$LENGTH" "$WIDTH"
+    --msgbox "$RESULT" 0 0
 }
 
 # function for create wallet ###################################################
