@@ -66,7 +66,7 @@ if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
   sleep 1
 
   # if empty
-  if [[ "$(cat "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
+  if [[ "$(echo "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
     # execStart, add peers
     SERVICE_START="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --bind=$WARTHOG_BIND --connect=$WARTHOG_ADD_PEERS --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
   else
