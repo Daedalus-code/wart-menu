@@ -287,8 +287,8 @@ Height..: $WALLET_HEIGHT"
   "4")
     # ip address
     LENGTH="$(echo "$(echo "$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers 2>/dev/null)" | wc -l)+10" | bc 2>/dev/null)"
-    # peers from list
-    PEERS="$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers 2>/dev/null)"
+    # peers from file into a list
+    PEERS="$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers | tr ',' ' ' | sed 's/ /\n/g' 2>/dev/null)"
     # if zero
     if [[ -z "$PEERS" ]] &>/dev/null; then
       PEERS="null"
