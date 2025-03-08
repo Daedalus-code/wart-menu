@@ -18,7 +18,7 @@ if ! grep -q "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service ||
   clear
   printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
   # remove old file
-  sudo rm -f /etc/systemd/system/wart-node.service
+  sudo rm -f /etc/systemd/system/wart-node.service &>/dev/null
   sleep 1
 fi
 
@@ -31,7 +31,7 @@ if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
     clear
     printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
     # remove old file
-    sudo rm -f /etc/systemd/system/wart-node.service
+    sudo rm -f /etc/systemd/system/wart-node.service &>/dev/null
     sleep 1
   fi
 fi
@@ -45,7 +45,7 @@ if [[ "$(echo "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
   # check if wart-node.service needs updating
   if ! grep -q "connect=$WARTHOG_ADD_PEERS" /etc/systemd/system/wart-node.service; then
     # remove old file
-    sudo rm -f /etc/systemd/system/wart-node.service
+    sudo rm -f /etc/systemd/system/wart-node.service &>/dev/null
     sleep 1
   fi
 fi
