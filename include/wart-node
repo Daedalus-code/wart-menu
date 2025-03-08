@@ -243,6 +243,7 @@ Status..: $NODE_STATUS - Sync: $WALLET_SYNCED"
   "1")
     # if zero
     if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
+      # start wart-node
       sudo service wart-node start
       pidofwart_node
     else
@@ -256,6 +257,8 @@ Status..: $NODE_STATUS - Sync: $WALLET_SYNCED"
       pidofwart_remove
       # stop wart-node
       sudo service wart-node stop
+      # kill pidof wart-node
+      kill "$(pidof wart-node 2>/dev/null)" &>/dev/null
     else
       printf '%b' "[${P1}OK${N0}] Node is not running!\n"
       sleep 1
@@ -264,7 +267,7 @@ Status..: $NODE_STATUS - Sync: $WALLET_SYNCED"
   "3")
     # if any data
     if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
-      # stop wart-node
+      # restart wart-node
       sudo service wart-node restart
       pidofwart_node
     else
