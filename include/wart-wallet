@@ -53,17 +53,19 @@ print_balance() {
   WART_VALUE="$(echo "$WART_BALANCE*$WART_PRICE" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
   # if zero
   if [[ -z "$WART_BALANCE" ]] &>/dev/null; then
-    HEIGHT="5"
     RESULT="Node is not running!"
+    WIDTH="$(echo "10+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
+    HEIGHT="5"
   else
-    HEIGHT="7"
     RESULT="Balance : $WART_BALANCE WART
 Value : $WART_VALUE USD
 Price : $WART_PRICE USD"
+    WIDTH="$(echo "7+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
+    HEIGHT="7"
   fi
   dialog --title "Wallet balance" \
     --no-collapse \
-    --msgbox "$(echo "$RESULT" | column -t)" "$HEIGHT" "$(echo "10+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
+    --msgbox "$(echo "$RESULT" | column -t)" "$HEIGHT" "$WIDTH"
 }
 
 # function to print wallet address #############################################
