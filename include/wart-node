@@ -19,7 +19,7 @@ print_help() {
 
 # update wallet data
 update_wallet_data() {
-  if pidof wart-node; then
+  if pidof wart-node &>/dev/null; then
     echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
     echo "$(curl -s "$WARTHOG_API"/peers/banned 2>/dev/null | egrep -c "[0-9]+")" >/tmp/wbnd.tmp
     echo "$(curl -s "$WARTHOG_API"/chain/head 2>/dev/null)" >/tmp/whd.tmp
