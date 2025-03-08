@@ -226,12 +226,4 @@ if [[ ! -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 Press Enter to continue" </dev/tty
 fi
 
-################################################################################
-
-# start node
-if [[ "$(pidof wart-node | wc -l)" -eq "0" ]] &>/dev/null; then
-  # start node
-  sudo service wart-node start
-fi
-
 # END
