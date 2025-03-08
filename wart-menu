@@ -173,7 +173,7 @@ while true; do
     WIDTH="27"
     CHOICE_HEIGHT="4"
     BACKTITLE="Warthog logs"
-    TITLE="Warthog logs: $(wc -l "$WARTHOG_LOGS"/logs/* 2>/dev/null | grep "total" | awk '{ print $1 }')"
+    TITLE="Warthog logs: $(wc -l "$WARTHOG_LOGS"/* 2>/dev/null | grep "total" | awk '{ print $1 }')"
     MENU=""
 
     OPTIONS=(
@@ -195,22 +195,22 @@ while true; do
     case $CHOICE in
     "1")
       # connections
-      RESULT="$WARTHOG_LOGS/logs/connections.log"
+      RESULT="$WARTHOG_LOGS/connections.log"
       dialog --title "connections.log" --tailbox "$RESULT" 35 "$(echo "$(echo "$RESULT" | wc -L)+102" | bc 2>/dev/null)"
       ;;
     "2")
       # longrunning
-      RESULT="$WARTHOG_LOGS/logs/longrunning.log"
+      RESULT="$WARTHOG_LOGS/longrunning.log"
       dialog --title "longrunning.log" --tailbox "$RESULT" 35 "$(echo "$(echo "$RESULT" | wc -L)+102" | bc 2>/dev/null)"
       ;;
     "3")
       # syncdebug
-      RESULT="$WARTHOG_LOGS/logs/syncdebug.log"
+      RESULT="$WARTHOG_LOGS/syncdebug.log"
       dialog --title "syncdebug.log" --tailbox "$RESULT" 35 "$(echo "$(echo "$RESULT" | wc -L)+102" | bc 2>/dev/null)"
       ;;
     "4")
       # timing
-      RESULT="$WARTHOG_LOGS/logs/timing.log"
+      RESULT="$WARTHOG_LOGS/timing.log"
       dialog --title "timing.log" --tailbox "$RESULT" 35 "$(echo "$(echo "$RESULT" | wc -L)+102" | bc 2>/dev/null)"
       ;;
     esac
