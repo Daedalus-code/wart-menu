@@ -46,6 +46,8 @@ if [[ -f /etc/wart-menu/peers ]] &>/dev/null; then
   if [[ "$(echo "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
     # check if wart-node.service needs updating
     if ! grep -q "connect=$WARTHOG_ADD_PEERS" /etc/systemd/system/wart-node.service; then
+      clear
+      printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
       # remove old file
       sudo rm -f /etc/systemd/system/wart-node.service &>/dev/null
       sleep 1
