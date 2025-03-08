@@ -295,10 +295,11 @@ Height..: $WALLET_HEIGHT"
       # remove duplicates
       echo "$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers 2>/dev/null | awk '!a[$0]++' | xargs | tr ' ' ',')" >/etc/wart-menu/peers
       RESULT="Add: $CONNECT_IP:$CONNECT_PORT Total: $(wc -l /etc/wart-menu/peers 2>/dev/null | awk '{ print $1 }')"
+      WIDTH="$(echo "$(echo "$RESULT" | wc -L)+5" | bc 2>/dev/null)"
       # connect to peers
       dialog --title "Add $CONNECT_IP:$CONNECT_PORT" \
         --no-collapse \
-        --msgbox "$RESULT" 0 0
+        --msgbox "$RESULT" 5 "$WIDTH"
       sleep 1
     fi
     ;;

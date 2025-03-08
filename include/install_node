@@ -22,6 +22,8 @@ if ! grep -q "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service ||
   sleep 1
 fi
 
+################################################################################
+
 # if any data
 if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
   # check if wart-node.service needs updating
@@ -32,6 +34,15 @@ if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
     sudo rm -f /etc/systemd/system/wart-node.service
     sleep 1
   fi
+fi
+
+################################################################################
+
+# check if wart-node.service needs updating
+if ! grep -q "connect=$WARTHOG_ADD_PEERS" /etc/systemd/system/wart-node.service; then
+  # remove old file
+  sudo rm -f /etc/systemd/system/wart-node.service
+  sleep 1
 fi
 
 ################################################################################
@@ -51,12 +62,6 @@ if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
 
   # if empty
   if [[ "$(cat "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
-    # if any data
-    if ! grep -q "connect=$WARTHOG_ADD_PEERS" /etc/systemd/system/wart-node.service; then
-      # remove old file
-      sudo rm -f /etc/systemd/system/wart-node.service
-      sleep 1
-    fi
     # execStart, add peers
     SERVICE_START="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --bind=$WARTHOG_BIND --connect=$WARTHOG_ADD_PEERS --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
   else
