@@ -39,10 +39,9 @@ fi
 ################################################################################
 
 # extra peers
-WARTHOG_ADD_PEERS="/etc/wart-menu/peers"
-
+WARTHOG_ADD_PEERS="$(cat /etc/wart-menu/peers 2>/dev/null)"
 # if empty
-if [[ "$(cat "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
+if [[ "$(echo "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
   # check if wart-node.service needs updating
   if ! grep -q "connect=$WARTHOG_ADD_PEERS" /etc/systemd/system/wart-node.service; then
     # remove old file
