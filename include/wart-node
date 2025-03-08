@@ -285,6 +285,12 @@ Height..: $WALLET_HEIGHT"
     fi
     ;;
   "4")
+    if dialog --stdout --title "Edit peers" \
+      --backtitle "Edit peers?" \
+      --yesno "Yes: Edit! No: Continue!" 5 30; then
+      # edit peers
+      nano /etc/wart-menu/peers
+    fi
     # ip address
     LENGTH="$(echo "$(echo "$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers 2>/dev/null)" | wc -l)+10" | bc 2>/dev/null)"
     # peers from file into a list
@@ -315,12 +321,6 @@ Enter new IP address:" "$LENGTH" 40 3>&1 1>&2 2>&3 3>&-)"
         --no-collapse \
         --msgbox "$RESULT" 5 "$WIDTH"
       sleep 1
-    fi
-    if dialog --stdout --title "Edit peers" \
-      --backtitle "Edit peers?" \
-      --yesno "Yes: Edit! No: Continue!" 5 30; then
-      # edit peers
-      nano /etc/wart-menu/peers
     fi
     ;;
   "5")
