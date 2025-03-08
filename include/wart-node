@@ -291,10 +291,14 @@ Height..: $WALLET_HEIGHT"
     CONNECT_PORT="$(dialog --title "Port" --inputbox "Enter port:" 8 40 3>&1 1>&2 2>&3 3>&-)"
     # if any data
     if [[ -n "$CONNECT_IP" && -n "$CONNECT_PORT" ]] &>/dev/null; then
-      # connect to peer
-      dialog --title "Connecting to $CONNECT_IP:$CONNECT_PORT" \
+      echo "$CONNECT_IP:$CONNECT_PORT" >>/etc/wart-menu/peers
+      # remove duplicates
+      echo "$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers 2>/dev/null | awk '!a[$0]++' | xargs | tr ' ' ',')" >/etc/wart-menu/peers
+      RESULT="Add: $CONNECT_IP:$CONNECT_PORT Total: $(wc -l /etc/wart-menu/peers 2>/dev/null | awk '{ print $1 }')"
+      # connect to peers
+      dialog --title "Add $CONNECT_IP:$CONNECT_PORT" \
         --no-collapse \
-        --msgbox "$(cd "$WARTHOG_DIR"/node && ./wart-node -C "$CONNECT_IP:$CONNECT_PORT")" 0 0
+        --msgbox "$RESULT" 0 0
       sleep 1
     fi
     ;;

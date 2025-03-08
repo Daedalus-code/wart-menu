@@ -45,13 +45,30 @@ if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
   printf '%b' "[${G1}OK${N0}] Installing/Updating wart-node.service..\n"
   sleep 1
 
-  # execStart
-  SERVICE_START="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --bind=$WARTHOG_BIND --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
+  # extra peers
+  WARTHOG_ADD_PEERS="/etc/wart-menu/peers"
+
+  # if empty
+  if [[ "$(cat "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
+    # if any data
+    if ! grep -q "connect=$WARTHOG_ADD_PEERS" /etc/systemd/system/wart-node.service; then
+      # remove old file
+      sudo rm -f /etc/systemd/system/wart-node.service
+      sleep 1
+    fi
+    # execStart, add peers
+    SERVICE_START="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --bind=$WARTHOG_BIND --connect=$WARTHOG_ADD_PEERS --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
+  else
+    # execStart
+    SERVICE_START="ExecStart=$WARTHOG_DIR/node/wart-node --rpc=$WARTHOG_API --bind=$WARTHOG_BIND --chain-db=$WARTHOG_CHAIN --peers-db=$WARTHOG_PEERS"
+  fi
+
   # if zero
   if [[ -z "$WARTHOG_STRATUM" ]] &>/dev/null; then
     # normal node
     WARTHOG_EXECSTART="$SERVICE_START"
   fi
+
   # if any data
   if [[ -n "$WARTHOG_STRATUM" ]] &>/dev/null; then
     # node + solo mining
