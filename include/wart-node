@@ -287,8 +287,14 @@ Height..: $WALLET_HEIGHT"
   "4")
     # ip address
     LENGTH="$(echo "$(echo "$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers 2>/dev/null)" | wc -l)+10" | bc 2>/dev/null)"
+    # peers from list
+    PEERS="$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers 2>/dev/null)"
+    # if zero
+    if [[ -z "$PEERS" ]] &>/dev/null; then
+      PEERS="null"
+    fi
     CONNECT_IP="$(dialog --title "IP Address" --inputbox "Peers:
-$(egrep "[0-9]+.[0-9]+.[0-9]+.[0-9]+:[0-9]+" /etc/wart-menu/peers 2>/dev/null)
+$PEERS
 
 Enter new IP address:" "$LENGTH" 40 3>&1 1>&2 2>&3 3>&-)"
     # if zero
