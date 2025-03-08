@@ -38,11 +38,17 @@ fi
 
 ################################################################################
 
-# check if wart-node.service needs updating
-if ! grep -q "connect=$WARTHOG_ADD_PEERS" /etc/systemd/system/wart-node.service; then
-  # remove old file
-  sudo rm -f /etc/systemd/system/wart-node.service
-  sleep 1
+# extra peers
+WARTHOG_ADD_PEERS="/etc/wart-menu/peers"
+
+# if empty
+if [[ "$(cat "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
+  # check if wart-node.service needs updating
+  if ! grep -q "connect=$WARTHOG_ADD_PEERS" /etc/systemd/system/wart-node.service; then
+    # remove old file
+    sudo rm -f /etc/systemd/system/wart-node.service
+    sleep 1
+  fi
 fi
 
 ################################################################################
@@ -56,9 +62,6 @@ if [[ ! -f /etc/systemd/system/wart-node.service ]] &>/dev/null; then
   # output service file
   printf '%b' "[${G1}OK${N0}] Installing/Updating wart-node.service..\n"
   sleep 1
-
-  # extra peers
-  WARTHOG_ADD_PEERS="/etc/wart-menu/peers"
 
   # if empty
   if [[ "$(cat "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
