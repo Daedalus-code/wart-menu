@@ -60,7 +60,13 @@ print_balance() {
     RESULT="Balance : $WART_BALANCE WART
 Value : $WART_VALUE USD
 Price : $WART_PRICE USD"
-    WIDTH="$(echo "7+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
+    # if zero balance
+    if [[ "$WART_BALANCE" == "0" ]] &>/dev/null; then
+      EXTRA_WIDTH="3"
+    else
+      EXTRA_WIDTH="0"
+    fi
+    WIDTH="$(echo "7+${EXTRA_WIDTH}+$(echo "$RESULT" | wc -L)" | bc 2>/dev/null)"
     HEIGHT="7"
   fi
   dialog --title "Wallet balance" \
