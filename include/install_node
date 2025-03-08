@@ -42,10 +42,12 @@ fi
 if [[ -f /etc/wart-menu/peers ]] &>/dev/null; then
   # extra peers
   WARTHOG_ADD_PEERS="$(cat /etc/wart-menu/peers 2>/dev/null)"
+  # grep peers
+  GREP_PEERS="$(grep "connect" /etc/systemd/system/wart-node.service 2>/dev/null | awk '{ print $4 }' | awk -F= '{ print $2 }')"
   # if empty
   if [[ "$(echo "$WARTHOG_ADD_PEERS" | wc -l)" -gt "0" ]] &>/dev/null; then
     # check if wart-node.service needs updating
-    if ! grep -q "connect=$(grep "connect" /etc/systemd/system/wart-node.service 2>/dev/null | awk '{ print $4 }' | awk -F= '{ print $2 }')" /etc/systemd/system/wart-node.service; then
+    if [[ ! "$GREP_PEERS" == "$WARTHOG_ADD_PEERS" ]] &>/dev/null; then
       clear
       printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
       # remove old file
