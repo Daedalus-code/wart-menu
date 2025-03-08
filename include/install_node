@@ -12,7 +12,8 @@ if ! grep -q "$WARTHOG_CHAIN" /etc/systemd/system/wart-node.service ||
   ! grep -q "$WARTHOG_PEERS" /etc/systemd/system/wart-node.service ||
   ! grep -q "$WARTHOG_API" /etc/systemd/system/wart-node.service ||
   ! grep -q "$WARTHOG_API" /etc/systemd/system/wart-node.service ||
-  ! grep -q "$USER" /etc/systemd/system/wart-node.service; then
+  ! grep -q "User=$USER" /etc/systemd/system/wart-node.service ||
+  ! grep -q "Group=$USER" /etc/systemd/system/wart-node.service; then
   clear
   printf '%b' "[${G1}OK${N0}] Found new configuration!\n"
   # remove old file
