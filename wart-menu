@@ -196,21 +196,33 @@ while true; do
     "1")
       # connections
       RESULT="$WARTHOG_LOGS/connections.log"
+      # clean logs
+      echo "$(tail -1440 "$WARTHOG_LOGS"/connections.log 2>/dev/null)" >"$WARTHOG_LOGS"/connections.log
+      # connections dialog
       dialog --title "connections.log" --tailbox "$RESULT" 35 "$(echo "$(echo "$RESULT" | wc -L)+102" | bc 2>/dev/null)"
       ;;
     "2")
       # longrunning
       RESULT="$WARTHOG_LOGS/longrunning.log"
+      # clean logs
+      echo "$(tail -1440 "$WARTHOG_LOGS"/longrunning.log 2>/dev/null)" >"$WARTHOG_LOGS"/longrunning.log
+      # longrunning dialog
       dialog --title "longrunning.log" --tailbox "$RESULT" 35 "$(echo "$(echo "$RESULT" | wc -L)+102" | bc 2>/dev/null)"
       ;;
     "3")
       # syncdebug
       RESULT="$WARTHOG_LOGS/syncdebug.log"
+      # clean logs
+      echo "$(tail -1440 "$WARTHOG_LOGS"/syncdebug.log 2>/dev/null)" >"$WARTHOG_LOGS"/syncdebug.log
+      # syncdebug dialog
       dialog --title "syncdebug.log" --tailbox "$RESULT" 35 "$(echo "$(echo "$RESULT" | wc -L)+102" | bc 2>/dev/null)"
       ;;
     "4")
       # timing
       RESULT="$WARTHOG_LOGS/timing.log"
+      # clean logs
+      echo "$(tail -1440 "$WARTHOG_LOGS"/timing.log 2>/dev/null)" >"$WARTHOG_LOGS"/timing.log
+      # timing dialog
       dialog --title "timing.log" --tailbox "$RESULT" 35 "$(echo "$(echo "$RESULT" | wc -L)+102" | bc 2>/dev/null)"
       ;;
     esac
