@@ -20,9 +20,14 @@ print_help() {
 # update wallet data
 update_wallet_data() {
   if pidof wart-node &>/dev/null; then
-    echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null | wc -l)" >/tmp/wprs.tmp
-    echo "$(curl -s "$WARTHOG_API"/peers/banned 2>/dev/null | egrep -c "[0-9]+")" >/tmp/wbnd.tmp
-    echo "$(curl -s "$WARTHOG_API"/chain/head 2>/dev/null)" >/tmp/whd.tmp
+    # raw data
+    echo "$(curl -s "$WARTHOG_API"/peers/ip_count 2>/dev/null)" >/tmp/wprs.raw.tmp
+    echo "$(curl -s "$WARTHOG_API"/peers/banned 2>/dev/null)" >/tmp/wbnd.raw.tmp
+    echo "$(curl -s "$WARTHOG_API"/chain/head 2>/dev/null)" >/tmp/whd.raw.tmp
+    # count
+    echo "$(cat /tmp/wprs.raw.tmp 2>/dev/null | wc -l)" >/tmp/wprs.tmp
+    echo "$(cat /tmp/wbnd.raw.tmp 2>/dev/null | egrep -c "[0-9]+")" >/tmp/wbnd.tmp
+    echo "$(cat /tmp/whd.raw.tmp 2>/dev/null)" >/tmp/whd.tmp
   fi
 }
 
@@ -41,7 +46,7 @@ WALLET_BANNED="$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))"
 WALLET_HEAD="$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))"
 
 # of missing, if old enough
-if [[ "$WALLET_PEERS" -gt "60" || "$WALLET_BANNED" -gt "90" || "$WALLET_HEAD" -gt "120" ]] &>/dev/null; then
+if [[ "$WALLET_PEERS" -gt "120" || "$WALLET_BANNED" -gt "180" || "$WALLET_HEAD" -gt "60" ]] &>/dev/null; then
   update_wallet_data
 fi
 
@@ -53,6 +58,8 @@ WALLET_BANNED="$(cat /tmp/wbnd.tmp 2>/dev/null)"
 WALLET_SYNCED="$(grep "synced" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
 # wallet height
 WALLET_HEIGHT="$(grep "height" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
+# wallet difficulty
+WALLET_DIFF="$(grep "difficulty" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
 
 # if zero
 if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
@@ -225,14 +232,10 @@ if [[ -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   TITLE="Wart-Node Menu"
   MENU="Load....: $SYSTEM_LOAD $CPU_TEMP
-System..: $SYSTEM_UPTIME_DAYS $SYSTEM_DAY_DAYS - $SYSTEM_UPTIME_FORMATTED
-Node....: $WART_UPTIME_DAYS $WART_DAY_DAYS - $WART_UPTIME_FORMATTED
-Status..: $NODE_STATUS - Sync: $WALLET_SYNCED
-Peers...: $WALLET_PEERS - Banned: $WALLET_BANNED
 Version.: v$INSTALLED_RELEASE $NEW_RELEASE
-Height..: $WALLET_HEIGHT"
-  CHOICE_HEIGHT="8"
-  HEIGHT="21"
+Status..: $NODE_STATUS - Sync: $WALLET_SYNCED"
+  CHOICE_HEIGHT="9"
+  HEIGHT="18"
   WIDTH="46"
 
   OPTIONS=(
@@ -240,10 +243,11 @@ Height..: $WALLET_HEIGHT"
     2 "Stop             Kill wart-node"
     3 "Restart          Restart wart-node"
     4 "Connect          Connect peer"
-    5 "Status           Service status"
-    6 "Config           wart-node.service"
-    7 "Update           Update wart-node"
-    8 "Help")
+    5 "Peers            Connections"
+    6 "Status           Service status"
+    7 "Config           wart-node.service"
+    8 "Update           Update wart-node"
+    9 "Help")
 
   CHOICE=$(dialog --clear \
     --title "$TITLE" \
@@ -329,12 +333,33 @@ Enter new IP address:" "$LENGTH" 40 3>&1 1>&2 2>&3 3>&-)"
     fi
     ;;
   "5")
+    # peers
+    RESULT="$(cat /tmp/wprs.raw.tmp 2>/dev/null | tr -d '",}{:' | awk '{ print $1 }' | sort -n | cat -s)"
+    # if zero
+    if [[ -z "$RESULT" ]] &>/dev/null; then
+      RESULT="null"
+    fi
+    # connected peers dialog
+    dialog --title "Connections: $(echo "$RESULT" | egrep -c "[0-9]+")" \
+      --no-collapse \
+      --msgbox "$RESULT" 0 0
+    ;;
+  "6")
+    # update wallet data
+    update_wallet_data
+    # node service status
     dialog --title "Wart-node.service status" \
       --no-collapse \
-      --msgbox "$(service wart-node status)" 0 0
+      --msgbox "System.....: $SYSTEM_UPTIME_DAYS $SYSTEM_DAY_DAYS - $SYSTEM_UPTIME_FORMATTED
+Node.......: $WART_UPTIME_DAYS $WART_DAY_DAYS - $WART_UPTIME_FORMATTED
+Peers......: $WALLET_PEERS - Banned: $WALLET_BANNED
+Height.....: $WALLET_HEIGHT
+Difficulty.: $WALLET_DIFF
+
+Service....: $(service wart-node status)" 0 0
     ;;
-  "6") sudo nano /etc/systemd/system/wart-node.service ;;
-  "7")
+  "7") sudo nano /etc/systemd/system/wart-node.service ;;
+  "8")
     # if any data
     if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
       # stop wart-node
@@ -353,7 +378,7 @@ Enter new IP address:" "$LENGTH" 40 3>&1 1>&2 2>&3 3>&-)"
     printf '%b' "[${G1}OK${N0}] Build time: $TIMER_FORMATTED with $NINJA_THREADS Core(s) $CPU_TEMP\n"
     read -r -p "[!?] Press Enter to continue" </dev/tty
     ;;
-  "8") print_help ;;
+  "9") print_help ;;
   esac
 fi
 
