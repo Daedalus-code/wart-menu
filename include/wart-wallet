@@ -58,8 +58,8 @@ print_balance() {
     HEIGHT="5"
   else
     RESULT="Balance : $WART_BALANCE WART
-Value : $WART_VALUE USD
-Price : $WART_PRICE USD"
+Price : $WART_PRICE USD
+Value : $WART_VALUE USD"
     # if zero balance
     if [[ "$WART_BALANCE" == "0" ]] &>/dev/null; then
       EXTRA_WIDTH="3"
