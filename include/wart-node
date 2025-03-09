@@ -137,7 +137,7 @@ fi
 # node installed
 if [[ -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
-  TITLE="Wart-Node Menu"
+  TITLE="Wart-Node"
   MENU="Load...: $SYSTEM_LOAD $CPU_TEMP
 Status.: $NODE_STATUS - Sync: $WALLET_SYNCED"
   CHOICE_HEIGHT="9"
