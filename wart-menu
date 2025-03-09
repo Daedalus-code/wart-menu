@@ -5,13 +5,13 @@
 export NCURSES_NO_UTF8_ACS=1
 
 # color scheme
-R0='\e[31m'      # Red
-BL='\e[38;5;27m' # Deep Blue (Shadow)
-GR='\e[90m'      # Grey
-N0='\033[0m'     # No color (reset)
-P1='\e[38;5;99m' # Bright Purple (Glow)
+R0='\e[31m'      # red
+BL='\e[38;5;27m' # deep Blue (Shadow)
+GR='\e[90m'      # grey
+N0='\033[0m'     # no color (reset)
+P1='\e[38;5;99m' # bright Purple (Glow)
 
-MENU_VERSION="1.0.4" # Updated menu version
+MENU_VERSION="1.3.0" # updated menu version
 
 # information with colors
 WARTHOG_LOGO="${N0}[$(date)]${N0} ${BL}[INFO]${N0} ${P1}Wart-Menu v$MENU_VERSION${N0}
