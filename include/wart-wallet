@@ -32,25 +32,23 @@ wart_price() {
   if [ ! -f "$PRICE_FILE" ] || [ "$PRICE_AGE" -gt "420" ]; then
     CRYPTO="warthog"
     CURRENCY="usd"
-
     {
       ##########################################################################
       echo "$(awk 'BEGIN {srand(); printf "%d\n", int(1 + rand() * (8 - 1))}')"
       # fetch the latest price from the coingecko api ##########################
       PRICE=$(timeout 10 curl -s "https://api.coingecko.com/api/v3/simple/price?ids=$CRYPTO&vs_currencies=$CURRENCY" | jq -r ".$CRYPTO.$CURRENCY")
       ##########################################################################
+      if [[ -z "$PRICE" ]] &>/dev/null; then
+        PRICE="0"
+      fi
       echo "42"
       sleep 0.1
       ##########################################################################
+      echo "$PRICE" >"$PRICE_FILE"
       echo "100"
       sleep 0.1
       ##########################################################################
     } | dialog --title "$(date | xargs)" --gauge "Fetching price.." 6 50 0
-
-    # if the api returned a valid price, update the cache
-    if [ -n "$PRICE" ] && [ "$PRICE" != "null" ]; then
-      echo "$PRICE" >"$PRICE_FILE"
-    fi
   fi
   # read the (possibly updated) cached price
   WART_PRICE=$(cat "$PRICE_FILE" 2>/dev/null)
