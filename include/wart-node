@@ -31,62 +31,6 @@ update_wallet_data() {
   fi
 }
 
-# if missing
-if [[ ! -f /tmp/wprs.tmp || ! -f /tmp/wbnd.tmp || ! -f /tmp/whd.tmp ]] &>/dev/null; then
-  update_wallet_data
-fi
-
-# system date
-DATE="$(date '+%s' 2>/dev/null)"
-# wallet peers age
-WALLET_PEERS="$(("$DATE" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))"
-# wallet banned peers age
-WALLET_BANNED="$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))"
-# wallet head age
-WALLET_HEAD="$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))"
-
-# of missing, if old enough
-if [[ "$WALLET_PEERS" -gt "120" || "$WALLET_BANNED" -gt "180" || "$WALLET_HEAD" -gt "60" ]] &>/dev/null; then
-  update_wallet_data
-fi
-
-# wallet peers
-WALLET_PEERS="$(cat /tmp/wprs.tmp 2>/dev/null)"
-# wallet peers
-WALLET_BANNED="$(cat /tmp/wbnd.tmp 2>/dev/null)"
-# wallet synced
-WALLET_SYNCED="$(grep "synced" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
-# wallet height
-WALLET_HEIGHT="$(grep "height" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
-# wallet difficulty
-WALLET_DIFF="$(grep "difficulty" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
-
-# if zero
-if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
-  WALLET_PEERS="0"
-fi
-# if true
-if [[ "$WALLET_SYNCED" == "true" && "$WALLET_HEIGHT" -gt "0" ]] &>/dev/null; then
-  WALLET_SYNCED="OK"
-else
-  # wallet sync percentage
-  WARTHOG_SERVICE="$(service wart-node status 2>/dev/null)"
-  WALLET_SYNC_NOW="$(echo "$WARTHOG_SERVICE" | awk -FSyncing '{ print $2 }' | tr -d '.)(a-z' | awk '{ print $1 }' | tail -1)"
-  WALLET_SYNC_HEIGHT="$(echo "$WARTHOG_SERVICE" | awk -FSyncing '{ print $2 }' | tr -d '.)(a-z' | awk '{ print $2 }' | tail -1)"
-  WALLET_SYNCED="$(echo "100/$WALLET_SYNC_HEIGHT*$WALLET_SYNC_NOW" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
-  # if any data
-  if [[ -n "$WALLET_SYNCED" ]] &>/dev/null; then
-    # default
-    WALLET_SYNCED="${WALLET_SYNCED}%"
-  else
-    WALLET_SYNCED="0%"
-  fi
-fi
-# if zero
-if [[ -z "$WALLET_HEIGHT" ]] &>/dev/null; then
-  WALLET_HEIGHT="null"
-fi
-
 ################################################################################
 
 # pidof wart-node
@@ -127,71 +71,49 @@ update_version_data() {
   echo "$(cd "$WARTHOG_DIR"/node && ./wart-node --version | awk '{ print $2 }' | tr -d 'v')" >/tmp/rnwr.tmp
 }
 
-# if missing
-if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
-  update_version_data
-fi
-
-# release age
-LATEST_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null)))
-# installed age
-INSTALLED_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null)))
-
-# if old enough
-if [[ "$LATEST_RELEASE_AGE" -gt "300" || "$INSTALLED_RELEASE_AGE" -gt "300" ]] &>/dev/null; then
-  update_version_data
-fi
-
 ################################################################################
 
-# installed and latest release
-PIDOF_WART_NODE="$(cat /tmp/pdown.tmp 2>/dev/null)"
-LATEST_RELEASE="$(cat /tmp/ltrwr.tmp 2>/dev/null)"
-INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
-# does not copy
-if [[ "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
-  # if zero
-  if [[ -z "$LATEST_RELEASE" ]] &>/dev/null; then
-    LATEST_RELEASE=" Not found"
-  fi
-  NEW_RELEASE="-> v$LATEST_RELEASE!"
-else
-  NEW_RELEASE="OK"
-fi
 # if online
 if [[ -n "$PIDOF_WART_NODE" ]] &>/dev/null; then
   NODE_STATUS="Online"
 else
   NODE_STATUS="Offline"
 fi
+
+################################################################################
+
+# wallet synced
+WALLET_SYNCED="$(grep "synced" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
+# wallet height
+WALLET_HEIGHT="$(grep "height" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
+
 # if zero
-if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
-  pidofwart_remove
+if [[ -z "$WALLET_HEIGHT" ]] &>/dev/null; then
+  WALLET_HEIGHT="null"
+fi
+
+# if true
+if [[ "$WALLET_SYNCED" == "true" && "$WALLET_HEIGHT" -gt "0" ]] &>/dev/null; then
+  WALLET_SYNCED="OK"
+else
+  # wallet sync percentage
+  WARTHOG_SERVICE="$(service wart-node status 2>/dev/null)"
+  WALLET_SYNC_NOW="$(echo "$WARTHOG_SERVICE" | awk -FSyncing '{ print $2 }' | tr -d '.)(a-z' | awk '{ print $1 }' | tail -1)"
+  WALLET_SYNC_HEIGHT="$(echo "$WARTHOG_SERVICE" | awk -FSyncing '{ print $2 }' | tr -d '.)(a-z' | awk '{ print $2 }' | tail -1)"
+  WALLET_SYNCED="$(echo "100/$WALLET_SYNC_HEIGHT*$WALLET_SYNC_NOW" | bc -l 2>/dev/null | awk '{ printf "%.2f\n", $1 }')"
+  # if any data
+  if [[ -n "$WALLET_SYNCED" ]] &>/dev/null; then
+    # default
+    WALLET_SYNCED="${WALLET_SYNCED}%"
+  else
+    WALLET_SYNCED="0%"
+  fi
 fi
 
 ################################################################################
 
 # system load
 SYSTEM_LOAD="$(awk '{ print $1,$2,$3 }' /proc/loadavg 2>/dev/null)"
-# get process start time from /proc/[PID]/stat (22nd field)
-START_TIME="$(awk '{print $22}' /proc/"$PIDOF_WART_NODE"/stat 2>/dev/null)"
-# get system uptime in clock ticks
-UPTIME_TICKS="$(getconf CLK_TCK)"
-# convert start time to seconds
-START_TIME_SECONDS="$((START_TIME / UPTIME_TICKS))"
-# get total system uptime in seconds
-SYSTEM_UPTIME="$(awk '{print $1}' /proc/uptime | cut -d. -f1)"
-# calculate into days
-SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
-# format output in hours, minutes and seconds
-SYSTEM_UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
-
-# if greater than n
-if [[ "$SYSTEM_UPTIME_DAYS" -gt "1" ]] &>/dev/null; then
-  SYSTEM_DAY_DAYS="Days"
-else
-  SYSTEM_DAY_DAYS="Day"
-fi
 
 ################################################################################
 
@@ -214,10 +136,9 @@ if [[ -d "$WARTHOG_DIR"/node ]] &>/dev/null; then
 
   TITLE="Wart-Node Menu"
   MENU="Load....: $SYSTEM_LOAD $CPU_TEMP
-Version.: v$INSTALLED_RELEASE $NEW_RELEASE
 Status..: $NODE_STATUS - Sync: $WALLET_SYNCED"
   CHOICE_HEIGHT="9"
-  HEIGHT="18"
+  HEIGHT="17"
   WIDTH="46"
 
   OPTIONS=(
@@ -331,13 +252,113 @@ Enter new IP address:" "$LENGTH" 40 3>&1 1>&2 2>&3 3>&-)"
       --no-collapse \
       --msgbox "$RESULT" "$LENGTH" "$WIDTH"
     ;;
+
+    ############################################################################
+
   "6")
+
+    # if missing
+    if [[ ! -f /tmp/wprs.tmp || ! -f /tmp/wbnd.tmp || ! -f /tmp/whd.tmp ]] &>/dev/null; then
+      update_wallet_data
+    fi
+
+    # system date
+    DATE="$(date '+%s' 2>/dev/null)"
+    # wallet peers age
+    WALLET_PEERS="$(("$DATE" - $(stat -c '%Y' /tmp/wprs.tmp 2>/dev/null)))"
+    # wallet banned peers age
+    WALLET_BANNED="$(("$DATE" - $(stat -c '%Y' /tmp/wbnd.tmp 2>/dev/null)))"
+    # wallet head age
+    WALLET_HEAD="$(("$DATE" - $(stat -c '%Y' /tmp/whd.tmp 2>/dev/null)))"
+
+    # of missing, if old enough
+    if [[ "$WALLET_PEERS" -gt "120" || "$WALLET_BANNED" -gt "180" || "$WALLET_HEAD" -gt "60" ]] &>/dev/null; then
+      update_wallet_data
+    fi
+
+    # wallet peers
+    WALLET_PEERS="$(cat /tmp/wprs.tmp 2>/dev/null)"
+    # wallet peers
+    WALLET_BANNED="$(cat /tmp/wbnd.tmp 2>/dev/null)"
+    # wallet difficulty
+    WALLET_DIFF="$(grep "difficulty" /tmp/whd.tmp 2>/dev/null | awk '{ print $2 }' | tr -d ',')"
+
+    # if zero
+    if [[ -z "$WALLET_PEERS" ]] &>/dev/null; then
+      WALLET_PEERS="0"
+    fi
+
+    ############################################################################
+
+    # if missing
+    if [[ ! -f /tmp/ltrwr.tmp || ! -f /tmp/rnwr.tmp ]] &>/dev/null; then
+      update_version_data
+    fi
+
+    # release age
+    LATEST_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/ltrwr.tmp 2>/dev/null)))
+    # installed age
+    INSTALLED_RELEASE_AGE=$(("$DATE" - $(stat -c '%Y' /tmp/rnwr.tmp 2>/dev/null)))
+
+    # if old enough
+    if [[ "$LATEST_RELEASE_AGE" -gt "300" || "$INSTALLED_RELEASE_AGE" -gt "300" ]] &>/dev/null; then
+      update_version_data
+    fi
+
+    ############################################################################
+
+    # get process start time from /proc/[PID]/stat (22nd field)
+    START_TIME="$(awk '{print $22}' /proc/"$PIDOF_WART_NODE"/stat 2>/dev/null)"
+    # get system uptime in clock ticks
+    UPTIME_TICKS="$(getconf CLK_TCK)"
+    # convert start time to seconds
+    START_TIME_SECONDS="$((START_TIME / UPTIME_TICKS))"
+    # get total system uptime in seconds
+    SYSTEM_UPTIME="$(awk '{print $1}' /proc/uptime | cut -d. -f1)"
+    # calculate into days
+    SYSTEM_UPTIME_DAYS="$(echo "$SYSTEM_UPTIME/86400" | bc 2>/dev/null)"
+    # format output in hours, minutes and seconds
+    SYSTEM_UPTIME_FORMATTED="$(printf '%dh:%dm:%ds\n' $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)/3600")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%3600/60")) $(("$(echo "${SYSTEM_UPTIME:?}" 2>&1)%60")))"
+
+    # if greater than n
+    if [[ "$SYSTEM_UPTIME_DAYS" -gt "1" ]] &>/dev/null; then
+      SYSTEM_DAY_DAYS="Days"
+    else
+      SYSTEM_DAY_DAYS="Day"
+    fi
+
+    ############################################################################
+
+    # installed and latest release
+    PIDOF_WART_NODE="$(cat /tmp/pdown.tmp 2>/dev/null)"
+    LATEST_RELEASE="$(cat /tmp/ltrwr.tmp 2>/dev/null)"
+    INSTALLED_RELEASE="$(cat /tmp/rnwr.tmp 2</dev/null)"
+
+    # does not copy
+    if [[ "$INSTALLED_RELEASE" -eq "$LATEST_RELEASE" ]] &>/dev/null; then
+      # if zero
+      if [[ -z "$LATEST_RELEASE" ]] &>/dev/null; then
+        LATEST_RELEASE=" Not found"
+      fi
+      NEW_RELEASE="-> v$LATEST_RELEASE!"
+    else
+      NEW_RELEASE="OK"
+    fi
+
+    # if zero
+    if [[ -z "$PIDOF_WART_NODE" ]] &>/dev/null; then
+      pidofwart_remove
+    fi
+
+    ############################################################################
+
     # update wallet data
     update_wallet_data
     # node service status
     dialog --title "Wart-node.service status" \
       --no-collapse \
       --msgbox "System.....: $SYSTEM_UPTIME_DAYS $SYSTEM_DAY_DAYS - $SYSTEM_UPTIME_FORMATTED
+Version....: v$INSTALLED_RELEASE $NEW_RELEASE
 Peers......: $WALLET_PEERS - Banned: $WALLET_BANNED
 Height.....: $WALLET_HEIGHT
 Difficulty.: $WALLET_DIFF
