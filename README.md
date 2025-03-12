@@ -1,5 +1,5 @@
 # wart-menu  
-###### Installed on ubuntu, HiveOS
+###### Installed on Ubuntu, HiveOS
 Warthog menu  
 
 ````cd````  
